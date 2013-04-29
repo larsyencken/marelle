@@ -13,10 +13,20 @@ main :-
     load_deps,
     main(Rest).
 
-main([installed]) :-
-    platform(P),
-    findall(X, detect(X, P), Xs),
-    maplist(writeln, Xs).
+main([installed|Tail]) :-
+    ( Tail = [] ->
+        platform(P),
+        findall(X, detect(X, P), Xs),
+        maplist(writeln, Xs)
+    ; Tail = [Pkg] ->
+        platform(P),
+        ( detect(Pkg, P) ->
+            join([Pkg, ' is installed'], Msg)
+        ;
+            join([Pkg, ' is not installed'], Msg)
+        ),
+        writeln(Msg)
+    ).
 
 main([install, Pkg]) :-
     platform(Plat),
