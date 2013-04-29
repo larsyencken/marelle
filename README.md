@@ -6,6 +6,8 @@ Test-driven system administration in SWI-Prolog, in the style of [Babushka](http
 
 Deliciously pre-alpha.
 
+![Hopscotch for Seniors](https://bytebucket.org/larsyencken/marelle/wiki/img/HopscotchForSeniors.jpg)
+
 ## Installing marelle
 
 ### On OS X, with Homebrew
