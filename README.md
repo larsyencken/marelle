@@ -47,8 +47,12 @@ install(python, osx) :- shell('brew install python').
 
 ### See what's installed
 
+This runs every `detect/2` statement that's valid for your platform.
+
 `marelle installed`
 
 ### Install something
+
+This will run the `install/2` clause for your package, provided a valid one exists for your current platform.
 
 `marelle install python`
