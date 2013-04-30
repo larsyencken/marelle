@@ -41,7 +41,12 @@ main :-
     load_deps,
     main(Rest).
 
-main([scan]) :- scan_packages.
+main([scan|R]) :-
+    ( R = ['--all'] ->
+        scan_packages(all)
+    ; R = [] ->
+        scan_packages(some)
+    ).
 
 main([status, Pkg]) :-
     ( detect(Pkg) ->
@@ -98,13 +103,20 @@ force_depends(Pkg, Deps) :-
         Deps = []
     ).
 
-% scan_packages is det.
+% scan_packages(+Visibility) is det.
 %   Print all supported packages, marking installed ones with an asterisk.
-scan_packages :-
+scan_packages(Visibility) :-
     writeln('Scanning packages...'),
     findall(P, package_state(P), Ps0),
-    sort(Ps0, Ps),
+    sort(Ps0, Ps1),
+    ( Visibility = all ->
+        Ps = Ps1
+    ;
+        exclude(hidden, Ps1, Ps)
+    ),
     maplist(writepkg, Ps).
+
+hidden(pkg(Pkg, _)) :- atom_concat('__', _, Pkg).
 
 package_state(Ann) :-
     platform(Platform),
