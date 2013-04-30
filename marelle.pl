@@ -16,6 +16,7 @@
 :- multifile pkg/1.
 :- multifile detect/2.
 :- multifile install/2.
+:- dynamic platform/1.
 
 % pkg(?Pkg) is nondet.
 %   Is this a defined package name?
@@ -34,40 +35,66 @@ main :-
     current_prolog_flag(argv, Argv),
     append(Front, Rest, Argv),
     length(Front, 6), !,
+    detect_platform,
     load_deps,
     main(Rest).
 
-main([scan|Tail]) :-
-    ( Tail = [] ->
-        scan_packages
-    ; Tail = [Pkg] ->
-        platform(P),
-        ( detect(Pkg, P) ->
-            join([Pkg, ' is installed'], Msg)
-        ;
-            join([Pkg, ' is not installed'], Msg)
-        ),
-        writeln(Msg)
-    ).
+main([scan]) :- scan_packages.
 
-main([install, Pkg]) :-
-    platform(Plat),
-    ( not(pkg(Pkg)) ->
-        join(['ERROR: ', Pkg, ' is not defined as a dep'], Msg)
-    ; detect(Pkg, Plat) ->
-        join(['SUCCESS: ', Pkg, ' is already installed'], Msg)
-    ; (install(Pkg, Plat), detect(Pkg, Plat)) ->
-        join(['SUCCESS: ', Pkg, ' has been installed'], Msg)
+main([status, Pkg]) :-
+    ( detect(Pkg) ->
+        Msg = 'OK'
     ;
-        join(['FAIL: ', Pkg, ' failed to install'], Msg)
+        Msg = 'NOT MET'
     ),
     writeln(Msg).
+
+main([install, Pkg]) :-
+    install_recursive(Pkg).
 
 main([platform]) :-
     platform(Plat),
     writeln(Plat).
 
 main(_) :- !, usage.
+
+install_recursive(Pkg) :-
+    ( not(pkg(Pkg)) ->
+        join(['ERROR: ', Pkg, ' is not defined as a dep'], Msg)
+    ; detect(Pkg) ->
+        join(['SUCCESS: ', Pkg], Msg)
+    ; ( force_depends(Pkg, Deps),
+        exclude(detect, Deps, Missing),
+        maplist(install_recursive, Missing),
+        join(['MEETING: ', Pkg], Msg0),
+        writeln(Msg0),
+        install(Pkg),
+        detect(Pkg)
+    ) ->
+        join(['SUCCESS: ', Pkg], Msg)
+    ;
+        join(['FAIL: ', Pkg, ' failed to converge'], Msg)
+    ),
+    writeln(Msg).
+
+detect(Pkg) :-
+    platform(P),
+    detect(Pkg, P).
+
+install(Pkg) :-
+    platform(P),
+    install(Pkg, P).
+
+% force_depends(+Pkg, -Deps) is det.
+%   Get a list of dependencies for the given package on this platform. If
+%   none exist, return an empty list.
+force_depends(Pkg, Deps) :-
+    platform(P),
+    ( depends(Pkg, P, Deps) ->
+        true
+    ;
+        Deps = []
+    ).
 
 % scan_packages is det.
 %   Print all supported packages, marking installed ones with an asterisk.
@@ -135,7 +162,7 @@ shellc(Cmd, Output) :-
 
 % platform(-Platform).
 %   Determines the current platform (e.g. osx, ubuntu).
-platform(Platform) :-
+detect_platform :-
     shellc('uname -s', Result),
     ( Result = 'Linux' ->
         ( which('lsb_release', _) ->
@@ -148,7 +175,8 @@ platform(Platform) :-
         Platform = osx
     ;
         Platform = unknown
-    ).
+    ),
+    assertz(platform(Platform)).
 
 join(L, R) :- atomic_list_concat(L, R).
 
