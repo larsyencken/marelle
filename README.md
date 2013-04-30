@@ -10,34 +10,28 @@ Deliciously pre-alpha.
 
 ## Installing marelle
 
-### On OS X, with Homebrew
+### 1. Get prolog
+
+#### On OS X, with homebrew
 
 ```bash
 # install prolog
 brew install swi-prolog
-
-# clone the repo
-mkdir -p ~/.local
-git clone https://bitbucket.org/larsyencken/marelle ~/.local/marelle
-
-# set up an executable
-cat >~/.local/bin/marelle <<EOF
-#!/bin/bash
-exec swipl -q -t main -s ~/.local/marelle/marelle.pl "$@"
-EOF
-chmod a+x ~/.local/bin/marelle
 ```
 
-### On Ubuntu
+#### On Ubuntu
 
 ```bash
 # install prolog
 sudo apt-get install swi-prolog
+```
 
+### 2. Clone the repo
+
+```bash
 # clone the repo
 mkdir -p ~/.local
 git clone https://bitbucket.org/larsyencken/marelle ~/.local/marelle
-ln -s ~/.local/marelle/marelle ~/.local/bin/marelle
 
 # set up an executable
 cat >~/.local/bin/marelle <<EOF
