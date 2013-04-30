@@ -19,7 +19,13 @@ brew install swi-prolog
 # clone the repo
 mkdir -p ~/.local
 git clone https://bitbucket.org/larsyencken/marelle ~/.local/marelle
-ln -s ~/.local/marelle/marelle ~/.local/bin/marelle
+
+# set up an executable
+cat >~/.local/bin/marelle <<EOF
+#!/bin/bash
+exec swipl -q -t main -s ~/.local/marelle/marelle.pl "$@"
+EOF
+chmod a+x ~/.local/bin/marelle
 ```
 
 ### On Ubuntu
@@ -32,6 +38,13 @@ sudo apt-get install swi-prolog
 mkdir -p ~/.local
 git clone https://bitbucket.org/larsyencken/marelle ~/.local/marelle
 ln -s ~/.local/marelle/marelle ~/.local/bin/marelle
+
+# set up an executable
+cat >~/.local/bin/marelle <<EOF
+#!/bin/bash
+exec swipl -q -t main -s ~/.local/marelle/marelle.pl "$@"
+EOF
+chmod a+x ~/.local/bin/marelle
 ```
 
 ## Writing deps
