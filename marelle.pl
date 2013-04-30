@@ -51,6 +51,10 @@ main([list]) :-
     findall(X, has_install_rule(X, Plat), Xs),
     maplist(writeln, Xs).
 
+main([platform]) :-
+    platform(Plat),
+    writeln(Plat).
+
 main(_) :- !, usage.
 
 load_deps :-
