@@ -4,6 +4,32 @@
 %  Test driven system administration.
 %
 
+%
+%  WRITING DEPS
+%
+%  You need one each of these three statements. E.g.
+%
+%  pkg(python).
+%  detect(python, _) :- which(python, _).
+%  install(python, osx) :- shell('brew install python').
+%
+:- multifile pkg/1.
+:- multifile detect/2.
+:- multifile install/2.
+
+% pkg(?Pkg) is nondet.
+%   Is this a defined package name?
+
+% detect(+Pkg, +Platform) is semidet.
+%   Determine if the package is already installed.
+
+% install(+Pkg, +Platform) is semidet.
+%   Try to install this package.
+
+
+%
+%  CORE CODE
+%
 main :-
     current_prolog_flag(argv, Argv),
     append(Front, Rest, Argv),
@@ -11,11 +37,9 @@ main :-
     load_deps,
     main(Rest).
 
-main([installed|Tail]) :-
+main([scan|Tail]) :-
     ( Tail = [] ->
-        platform(P),
-        findall(X, detect(X, P), Xs),
-        maplist(writeln, Xs)
+        scan_packages
     ; Tail = [Pkg] ->
         platform(P),
         ( detect(Pkg, P) ->
@@ -28,28 +52,16 @@ main([installed|Tail]) :-
 
 main([install, Pkg]) :-
     platform(Plat),
-    ( not(has_detect_rule(Pkg, Plat)) ->
-        join([Pkg, ' has no rule to detect it on ', Plat], Msg)
+    ( not(pkg(Pkg)) ->
+        join(['ERROR: ', Pkg, ' is not defined as a dep'], Msg)
     ; detect(Pkg, Plat) ->
-        join([Pkg, ' is already installed'], Msg)
-    ; not(has_install_rule(Pkg, Plat)) ->
-        join([Pkg, ' has no install rule on ', Plat], Msg)
+        join(['SUCCESS: ', Pkg, ' is already installed'], Msg)
     ; (install(Pkg, Plat), detect(Pkg, Plat)) ->
-        join([Pkg, ' has been installed'], Msg)
+        join(['SUCCESS: ', Pkg, ' has been installed'], Msg)
     ;
-        join([Pkg, ' failed to install'], Msg)
+        join(['FAIL: ', Pkg, ' failed to install'], Msg)
     ),
     writeln(Msg).
-
-main([listable]) :-
-    platform(Plat),
-    findall(X, has_detect_rule(X, Plat), Xs),
-    maplist(writeln, Xs).
-
-main([list]) :-
-    platform(Plat),
-    findall(X, has_install_rule(X, Plat), Xs),
-    maplist(writeln, Xs).
 
 main([platform]) :-
     platform(Plat),
@@ -57,9 +69,45 @@ main([platform]) :-
 
 main(_) :- !, usage.
 
+% scan_packages is det.
+%   Print all supported packages, marking installed ones with an asterisk.
+scan_packages :-
+    writeln('Scanning packages...'),
+    findall(P, package_state(P), Ps0),
+    sort(Ps0, Ps),
+    maplist(writepkg, Ps).
+
+package_state(Ann) :-
+    platform(Platform),
+    pkg(Pkg),
+    ground(Pkg),
+    ( detect(Pkg, Platform) ->
+        Ann = pkg(Pkg, installed)
+    ;
+        Ann = pkg(Pkg, notinstalled)
+    ).
+
+% load_deps is det.
+%   Looks for dependency files to load from a per-user directory and from
+%   a project specific directory.
 load_deps :-
-    expand_file_name('marelle-deps/*.pl', Files),
-    load_files(Files).
+    getenv('HOME', Home),
+    join([Home, '/.marelle/deps'], PersonalDeps),
+    ( exists_directory(PersonalDeps) ->
+        load_deps(PersonalDeps)
+    ;
+        true
+    ),
+    ( exists_directory('marelle-deps') ->
+        load_deps('marelle-deps')
+    ;
+        true
+    ).
+
+load_deps(Dir) :-
+    join([Dir, '/*.pl'], Pattern),
+    expand_file_name(Pattern, Deps),
+    load_files(Deps).
 
 usage :-
     writeln('Usage: marelle cmd [args]'),
@@ -67,28 +115,6 @@ usage :-
     writeln('Manage package detection and installation. Use "marelle install pkg"'),
     writeln('to install a new package, "marelle installable" to see what\'s available'),
     writeln('or "marelle list" to see what\'s already installed.').
-
-has_detect_rule(Pkg, Platform) :-
-    Term =.. [detect, Pkg, Platform],
-    callable(Term).
-
-has_install_rule(Pkg, Platform) :-
-    Term =.. [install, Pkg, Platform],
-    callable(Term).
-
-:- multifile detect/2.
-
-% detect(?Pkg, ?Platform).
-%   Determine if the package is already installed.
-detect('python', _) :- which('python', _).
-detect('python2.7', _) :- which('python2.7', _).
-detect('ruby', _) :- which('ruby', _).
-detect('racket', _) :- which('racket', _).
-
-:- multifile install/2.
-
-install('racket', 'osx') :- shellc('brew install plt-racket').
-
 
 % which(+Command, -Path).
 %   See if a command is available in the current path.
@@ -129,3 +155,16 @@ join(L, R) :- atomic_list_concat(L, R).
 %   Determine the codename of the linux release (e.g. precise).
 linux_codename(Codename) :-
     shellc('lsb_release -c | sed \'s/^[^:]*:\\s//g\'', Codename).
+
+writeln_star(L) :- write(L), write(' *\n').
+
+writepkg(pkg(P, installed)) :- writeln_star(P).
+writepkg(pkg(P, notinstalled)) :- writeln(P).
+
+install_apt(Name) :-
+    join(['sudo apt-get install ', Name], Cmd),
+    shell(Cmd, 0).
+
+install_brew(Name) :-
+    join(['brew install ', Name], Cmd),
+    shell(Cmd, 0).

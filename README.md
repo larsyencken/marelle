@@ -46,6 +46,7 @@ Make a `marelle-deps/` folder inside your project repo. Each package has two com
 For example, suppose I want Python installed on OS X with Homebrew. I might write a dep:
 
 ```prolog
+pkg(python).
 detect(python, osx) :- exists_file('/usr/local/bin/python').
 install(python, osx) :- shell('brew install python').
 ```
