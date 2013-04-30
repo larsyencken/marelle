@@ -1,5 +1,3 @@
-#!/usr/local/bin/swipl -q -t main -s
-% vim: set filetype=prolog:
 %
 %  marelle
 %
