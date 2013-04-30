@@ -110,11 +110,12 @@ load_deps(Dir) :-
     load_files(Deps).
 
 usage :-
-    writeln('Usage: marelle cmd [args]'),
+    writeln('Usage: marelle scan'),
+    writeln('       marelle install <pkg>'),
+    writeln('       marelle platform'),
     writeln(''),
-    writeln('Manage package detection and installation. Use "marelle install pkg"'),
-    writeln('to install a new package, "marelle installable" to see what\'s available'),
-    writeln('or "marelle list" to see what\'s already installed.').
+    writeln('Detect and install packages. Searches ~/.marelle/deps and the folder'),
+    writeln('marelle-deps in the current directory if it exists.').
 
 % which(+Command, -Path).
 %   See if a command is available in the current path.
