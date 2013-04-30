@@ -65,6 +65,14 @@ This will run the `meet/2` clause for your package, provided a valid one exists 
 
 `marelle meet python`
 
+### See your platform
+
+To find the right platform code to use in deps you're writing, run:
+
+`marelle platform`
+
+It reports the code for the platform you're currently on.
+
 ## Where to put your deps
 
 Like both Babushka and Babashka, Marelle looks for deps in `~/.marelle/deps` and in a folder called `marelle-deps` in the current directory, if either exists. This allows you to set up a personal set of deps for your environment, as well as project-specific deps.
