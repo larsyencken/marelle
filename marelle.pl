@@ -128,4 +128,4 @@ join(L, R) :- atomic_list_concat(L, R).
 % linux_codename(-Codename).
 %   Determine the codename of the linux release (e.g. precise).
 linux_codename(Codename) :-
-    shellc('lsb_release -c | sed \'s/^[^:]*:\s//g\'', Codename).
+    shellc('lsb_release -c | sed \'s/^[^:]*:\\s//g\'', Codename).
