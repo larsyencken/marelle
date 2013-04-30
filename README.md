@@ -12,17 +12,15 @@ Deliciously pre-alpha.
 
 ### 1. Get prolog
 
-#### On OS X, with homebrew
+On OS X, with homebrew:
 
 ```bash
-# install prolog
 brew install swi-prolog
 ```
 
-#### On Ubuntu
+On Ubuntu:
 
 ```bash
-# install prolog
 sudo apt-get install swi-prolog
 ```
 
