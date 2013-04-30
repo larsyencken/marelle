@@ -197,3 +197,11 @@ install_apt(Name) :-
 install_brew(Name) :-
     join(['brew install ', Name], Cmd),
     shell(Cmd, 0).
+
+home_dir(D0, D) :-
+    getenv('HOME', Home),
+    join([Home, '/', D0], D).
+
+git_clone(Source, Dest) :-
+    join(['git clone ', Source, ' ', Dest], Cmd),
+    shell(Cmd, 0).
