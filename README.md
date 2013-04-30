@@ -47,20 +47,20 @@ For example, suppose I want Python installed on OS X with Homebrew. I might writ
 
 ```prolog
 pkg(python).
-detect(python, osx) :- exists_file('/usr/local/bin/python').
-install(python, osx) :- shell('brew install python').
+met(python, osx) :- exists_file('/usr/local/bin/python').
+meet(python, osx) :- shell('brew install python').
 ```
 
 ## Running deps
 
-### See what's installed
+### See available deps
 
-This runs every `detect/2` statement that's valid for your platform.
+This runs every `met/2` statement that's valid for your platform.
 
-`marelle installed`
+`marelle scan`
 
 ### Install something
 
-This will run the `install/2` clause for your package, provided a valid one exists for your current platform.
+This will run the `meet/2` clause for your package, provided a valid one exists for your current platform.
 
-`marelle install python`
+`marelle meet python`
