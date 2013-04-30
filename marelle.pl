@@ -70,11 +70,11 @@ install_recursive(Pkg) :-
         join(['ERROR: ', Pkg, ' is not defined as a dep'], Msg)
     ; detect(Pkg) ->
         join(['SUCCESS: ', Pkg], Msg)
-    ; ( force_depends(Pkg, Deps),
+    ; ( join(['MEETING: ', Pkg], Msg0),
+        writeln(Msg0),
+        force_depends(Pkg, Deps),
         exclude(detect, Deps, Missing),
         maplist(install_recursive, Missing),
-        join(['MEETING: ', Pkg], Msg0),
-        writeln(Msg0),
         install(Pkg),
         detect(Pkg)
     ) ->
