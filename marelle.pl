@@ -16,6 +16,8 @@
 :- multifile pkg/1.
 :- multifile detect/2.
 :- multifile install/2.
+:- multifile depends/3.
+
 :- dynamic platform/1.
 
 % pkg(?Pkg) is nondet.
