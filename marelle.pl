@@ -10,12 +10,12 @@
 %  You need one each of these three statements. E.g.
 %
 %  pkg(python).
-%  detect(python, _) :- which(python, _).
-%  install(python, osx) :- shell('brew install python').
+%  met(python, _) :- which(python, _).
+%  meet(python, osx) :- shell('brew install python').
 %
 :- multifile pkg/1.
-:- multifile detect/2.
-:- multifile install/2.
+:- multifile meet/2.
+:- multifile met/2.
 :- multifile depends/3.
 
 :- dynamic platform/1.
@@ -23,10 +23,10 @@
 % pkg(?Pkg) is nondet.
 %   Is this a defined package name?
 
-% detect(+Pkg, +Platform) is semidet.
+% met(+Pkg, +Platform) is semidet.
 %   Determine if the package is already installed.
 
-% install(+Pkg, +Platform) is semidet.
+% meet(+Pkg, +Platform) is semidet.
 %   Try to install this package.
 
 
@@ -49,15 +49,15 @@ main([scan|R]) :-
     ).
 
 main([status, Pkg]) :-
-    ( detect(Pkg) ->
+    ( met(Pkg) ->
         Msg = 'OK'
     ;
         Msg = 'NOT MET'
     ),
     writeln(Msg).
 
-main([install, Pkg]) :-
-    install_recursive(Pkg).
+main([meet, Pkg]) :-
+    meet_recursive(Pkg).
 
 main([platform]) :-
     platform(Plat),
@@ -65,18 +65,19 @@ main([platform]) :-
 
 main(_) :- !, usage.
 
-install_recursive(Pkg) :-
+meet_recursive(Pkg) :-
     ( not(pkg(Pkg)) ->
         join(['ERROR: ', Pkg, ' is not defined as a dep'], Msg)
-    ; detect(Pkg) ->
+    ; met(Pkg) ->
         join(['SUCCESS: ', Pkg], Msg)
     ; ( join(['MEETING: ', Pkg], Msg0),
         writeln(Msg0),
         force_depends(Pkg, Deps),
-        exclude(detect, Deps, Missing),
-        maplist(install_recursive, Missing),
-        install(Pkg),
-        detect(Pkg)
+        exclude(met, Deps, Missing),
+        maplist(meet_recursive, Missing),
+        meet(Pkg),
+        writeln('ok here'),
+        met(Pkg)
     ) ->
         join(['SUCCESS: ', Pkg], Msg)
     ;
@@ -84,13 +85,15 @@ install_recursive(Pkg) :-
     ),
     writeln(Msg).
 
-detect(Pkg) :-
+met(Pkg) :-
+    join(['CHECKING: ', Pkg], Msg),
+    writeln(Msg),
     platform(P),
-    detect(Pkg, P).
+    met(Pkg, P).
 
-install(Pkg) :-
+meet(Pkg) :-
     platform(P),
-    install(Pkg, P).
+    meet(Pkg, P).
 
 % force_depends(+Pkg, -Deps) is det.
 %   Get a list of dependencies for the given package on this platform. If
@@ -122,10 +125,10 @@ package_state(Ann) :-
     platform(Platform),
     pkg(Pkg),
     ground(Pkg),
-    ( detect(Pkg, Platform) ->
-        Ann = pkg(Pkg, installed)
+    ( met(Pkg, Platform) ->
+        Ann = pkg(Pkg, met)
     ;
-        Ann = pkg(Pkg, notinstalled)
+        Ann = pkg(Pkg, notmet)
     ).
 
 % load_deps is det.
@@ -201,8 +204,8 @@ linux_codename(Codename) :-
 
 writeln_star(L) :- write(L), write(' *\n').
 
-writepkg(pkg(P, installed)) :- writeln_star(P).
-writepkg(pkg(P, notinstalled)) :- writeln(P).
+writepkg(pkg(P, met)) :- writeln_star(P).
+writepkg(pkg(P, notmet)) :- writeln(P).
 
 install_apt(Name) :-
     join(['sudo apt-get install ', Name], Cmd),
