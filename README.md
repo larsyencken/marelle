@@ -64,3 +64,11 @@ This runs every `met/2` statement that's valid for your platform.
 This will run the `meet/2` clause for your package, provided a valid one exists for your current platform.
 
 `marelle meet python`
+
+## Where to put your deps
+
+Like both Babushka and Babashka, Marelle looks for deps in `~/.marelle/deps` and in a folder called `marelle-deps` in the current directory, if either exists. This allows you to set up a personal set of deps for your environment, as well as project-specific deps.
+
+## Examples
+
+See my [marelle-deps](https://bitbucket.org/larsyencken/marelle-deps) repo for working examples.
