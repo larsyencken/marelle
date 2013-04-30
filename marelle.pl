@@ -44,8 +44,10 @@ main :-
 main([scan|R]) :-
     ( R = ['--all'] ->
         scan_packages(all)
+    ; R = ['--missing'] ->
+        scan_packages(missing)
     ; R = [] ->
-        scan_packages(some)
+        scan_packages(unprefixed)
     ).
 
 main([status, Pkg]) :-
@@ -114,12 +116,16 @@ scan_packages(Visibility) :-
     sort(Ps0, Ps1),
     ( Visibility = all ->
         Ps = Ps1
+    ; Visibility = missing ->
+        include(missing, Ps1, Ps)
     ;
         exclude(hidden, Ps1, Ps)
     ),
     maplist(writepkg, Ps).
 
 hidden(pkg(Pkg, _)) :- atom_concat('__', _, Pkg).
+
+missing(pkg(_, notmet)).
 
 package_state(Ann) :-
     platform(Platform),
