@@ -167,11 +167,16 @@ usage :-
     writeln('Detect and install packages. Searches ~/.marelle/deps and the folder'),
     writeln('marelle-deps in the current directory if it exists.').
 
-% which(+Command, -Path).
-%   See if a command is available in the current path.
+% which(+Command, -Path) is semidet.
+%   See if a command is available in the current PATH, and return the path to
+%   that command.
 which(Command, Path) :-
     join(['which ', Command], C),
     shellc(C, Path).
+
+% which(+Command) is semidet.
+%   See if a command is available in the current PATH.
+which(Command) :- which(Command, _).
 
 % shellc(+Cmd, -Output).
 %   Execute the command in a shellc, and fetch the output as an atom.
