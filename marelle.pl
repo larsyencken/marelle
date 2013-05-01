@@ -65,6 +65,9 @@ main([platform]) :-
     platform(Plat),
     writeln(Plat).
 
+main([debug]) :-
+    prolog.
+
 main(_) :- !, usage.
 
 meet_recursive(Pkg) :-
