@@ -71,23 +71,27 @@ main([debug]) :-
 main(_) :- !, usage.
 
 meet_recursive(Pkg) :-
-    ( not(pkg(Pkg)) ->
-        join(['ERROR: ', Pkg, ' is not defined as a dep'], Msg)
-    ; met(Pkg) ->
-        join(['SUCCESS: ', Pkg], Msg)
-    ; ( join(['MEETING: ', Pkg], Msg0),
-        writeln(Msg0),
-        force_depends(Pkg, Deps),
-        exclude(met, Deps, Missing),
-        maplist(meet_recursive, Missing),
-        meet(Pkg),
-        met(Pkg)
-    ) ->
-        join(['SUCCESS: ', Pkg], Msg)
+    ( pkg(Pkg) ->
+        ( met(Pkg) ->
+            join(['SUCCESS: ', Pkg], Msg)
+        ; ( join(['MEETING: ', Pkg], Msg0),
+            writeln(Msg0),
+            force_depends(Pkg, Deps),
+            exclude(met, Deps, Missing),
+            maplist(meet_recursive, Missing),
+            meet(Pkg),
+            met(Pkg)
+        ) ->
+            join(['SUCCESS: ', Pkg], Msg)
+        ;
+            join(['FAIL: ', Pkg, ' failed to converge'], Msg)
+        ),
+        writeln(Msg)
     ;
-        join(['FAIL: ', Pkg, ' failed to converge'], Msg)
-    ),
-    writeln(Msg).
+        join(['ERROR: ', Pkg, ' is not defined as a dep'], Msg),
+        writeln(Msg),
+        fail
+    ).
 
 met(Pkg) :-
     join(['CHECKING: ', Pkg], Msg),
