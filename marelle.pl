@@ -99,14 +99,13 @@ meet(Pkg) :-
 
 % force_depends(+Pkg, -Deps) is det.
 %   Get a list of dependencies for the given package on this platform. If
-%   none exist, return an empty list.
+%   none exist, return an empty list. Supports multiple matching depends/3
+%   statements for a package, or none.
 force_depends(Pkg, Deps) :-
     platform(P),
-    ( depends(Pkg, P, Deps) ->
-        true
-    ;
-        Deps = []
-    ).
+    findall(DepSet, depends(Pkg, P, DepSet), DepSets),
+    flatten(DepSets, Deps0),
+    list_to_set(Deps0, Deps).
 
 % scan_packages(+Visibility) is det.
 %   Print all supported packages, marking installed ones with an asterisk.
