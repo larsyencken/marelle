@@ -78,7 +78,6 @@ meet_recursive(Pkg) :-
         exclude(met, Deps, Missing),
         maplist(meet_recursive, Missing),
         meet(Pkg),
-        writeln('ok here'),
         met(Pkg)
     ) ->
         join(['SUCCESS: ', Pkg], Msg)
