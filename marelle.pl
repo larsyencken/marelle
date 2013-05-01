@@ -232,3 +232,8 @@ home_dir(D0, D) :-
 git_clone(Source, Dest) :-
     join(['git clone ', Source, ' ', Dest], Cmd),
     shell(Cmd, 0).
+
+%  command packages: met when their command is in path
+:- multifile command_pkg/1.
+pkg(P) :- command_pkg(P).
+met(P, _) :- which(P).
