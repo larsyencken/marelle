@@ -161,10 +161,10 @@ load_deps(Dir) :-
 
 usage :-
     writeln('Usage: marelle scan'),
-    writeln('       marelle install <pkg>'),
+    writeln('       marelle meet <pkg>'),
     writeln('       marelle platform'),
     writeln(''),
-    writeln('Detect and install packages. Searches ~/.marelle/deps and the folder'),
+    writeln('Detect and meet dependencies. Searches ~/.marelle/deps and the folder'),
     writeln('marelle-deps in the current directory if it exists.').
 
 % which(+Command, -Path) is semidet.
