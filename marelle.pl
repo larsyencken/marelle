@@ -238,4 +238,4 @@ git_clone(Source, Dest) :-
 %  command packages: met when their command is in path
 :- multifile command_pkg/1.
 pkg(P) :- command_pkg(P).
-met(P, _) :- which(P).
+met(P, _) :- command_pkg(P), which(P).
