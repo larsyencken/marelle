@@ -53,7 +53,7 @@ For example, suppose I want to write a dep for Python that works on recent Ubunt
 pkg(python).
 
 met(python, linux(_)) :- exists_file('/usr/bin/python').
-meet(python, linux(_)) :- install_apt(python-dev).
+meet(python, linux(_)) :- install_apt('python-dev').
 ```
 
 To install python on a machine, I'd now run `marelle meet python`.
