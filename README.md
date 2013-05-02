@@ -10,21 +10,25 @@ Deliciously pre-alpha.
 
 ## Installing marelle
 
-### 1. Get prolog
+### Quickstart
 
-On OS X, with homebrew:
-
-```bash
-brew install swi-prolog
-```
-
-On Ubuntu:
+Run the bootstrap script:
 
 ```bash
-sudo apt-get install swi-prolog
+bash -c "`curl https://bitbucket.org/larsyencken/marelle/raw/master/bootstrap.sh`"
 ```
 
-### 2. Clone the repo
+This will install marelle as the current user, putting the executable in `~/.local/bin/marelle`.
+
+### Manual version
+
+1. Get Prolog
+    - On OS X, with Homebrew: `brew install swi-prolog`
+    - On Ubuntu, with apt-get: `sudo apt-get install swi-prolog-nox`
+2. Get git
+    - On OS X, with Homebrew: `brew install git`
+    - On Ubuntu, with apt-get: `sudo apt-get install git`
+3. Clone and set up marelle
 
 ```bash
 # clone the repo
