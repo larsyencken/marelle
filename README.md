@@ -45,15 +45,34 @@ chmod a+x ~/.local/bin/marelle
 
 ## Writing deps
 
-Make a `marelle-deps/` folder inside your project repo. Each package has two components, a `detect/2` goal and an `install/2` goal, which can be written independently.
+Make a `marelle-deps/` folder inside your project repo. Each package has two components, a `met/2` goal which checks if the dependency is met, and an `meet/2` goal with instructions on how to actually meet it if it's missing.
 
-For example, suppose I want Python installed on OS X with Homebrew. I might write a dep:
+For example, suppose I want to write a dep for Python that works on recent Ubuntu flavours. I might write:
 
 ```prolog
 pkg(python).
-met(python, osx) :- exists_file('/usr/local/bin/python').
-meet(python, osx) :- shell('brew install python').
+
+met(python, linux(_)) :- exists_file('/usr/bin/python').
+meet(python, linux(_)) :- install_apt(python-dev).
 ```
+
+To install python on a machine, I'd now run `marelle meet python`.
+
+To install pip, I might write:
+
+```prolog
+pkg(pip).
+
+% pip is installed if we can run it
+met(pip, _) :- which(pip).
+
+% on all flavours of linux, try to install the python-pip package
+meet(pip, linux(_)) :- install_apt('python-pip').
+
+% on all platforms, pip depends on python
+depends(pip, _, [python]).
+```
+Note our our use of platform specifiers and the `_` wildcard in their place. To see your current platform as described by marelle, run `marelle platform`. Examples include: `osx`, `linux(precise)` and `linux(raring)`.
 
 ## Running deps
 
