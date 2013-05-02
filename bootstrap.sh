@@ -38,16 +38,16 @@ function install_prolog() {
   case $(uname -s) in
     Darwin)
       if has_exec brew; then
-        brew install git
+        brew install swi-prolog
       else
         bail "Please install Homebrew and retry"
       fi
       ;;
     Linux)
       if has_exec apt-get; then
-        sudo apt-get install -y git
+        sudo apt-get install -y swi-prolog-nox
       elif has_exec yum; then
-        sudo yum install git
+        sudo yum install swi-prolog
       else
         bail "Unknown linux variant"
       fi
