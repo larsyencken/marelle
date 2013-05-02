@@ -33,6 +33,8 @@
 %
 %  CORE CODE
 %
+%
+
 main :-
     current_prolog_flag(argv, Argv),
     append(Front, Rest, Argv),
@@ -70,32 +72,52 @@ main([debug]) :-
 
 main(_) :- !, usage.
 
-meet_recursive(Pkg) :-
+meet_recursive(Pkg) :- meet_recursive(Pkg, 0).
+
+meet_recursive(Pkg, Depth0) :-
     ( pkg(Pkg) ->
+        join(['PRE-CHECK: ', Pkg], M0),
+        writeln_indent(M0, Depth0),
         ( met(Pkg) ->
-            join(['SUCCESS: ', Pkg], Msg)
-        ; ( join(['MEETING: ', Pkg], Msg0),
-            writeln(Msg0),
+            join(['SUCCESS: ', Pkg], M1),
+            writeln_indent(M1, Depth0)
+        ; ( join(['MEETING: ', Pkg], M2),
+            writeln_indent(M2, Depth0),
             force_depends(Pkg, Deps),
             exclude(met, Deps, Missing),
-            maplist(meet_recursive, Missing),
+            Depth is Depth0 + 1,
+            length(Missing, L),
+            repeat_val(Depth, L, Depths),
+            maplist(meet_recursive, Missing, Depths),
             meet(Pkg),
+            join(['POST-CHECK: ', Pkg], M3),
+            writeln_indent(M3, Depth0),
             met(Pkg)
         ) ->
-            join(['SUCCESS: ', Pkg], Msg)
+            join(['SUCCESS: ', Pkg], M4),
+            writeln_indent(M4, Depth0)
         ;
-            join(['FAIL: ', Pkg, ' failed to converge'], Msg)
-        ),
-        writeln(Msg)
+            join(['FAIL: ', Pkg, ' failed to converge'], M5),
+            writeln_indent(M5, Depth0)
+        )
     ;
-        join(['ERROR: ', Pkg, ' is not defined as a dep'], Msg),
-        writeln(Msg),
+        join(['ERROR: ', Pkg, ' is not defined as a dep'], M6),
+        writeln_indent(M6, Depth0),
         fail
     ).
 
+repeat_val(X, N, Xs) :-
+    repeat_val(X, N, [], Xs).
+repeat_val(X, N0, Xs0, Xs) :-
+    ( N0 = 0 ->
+        Xs = Xs0
+    ;
+        N is N0 - 1,
+        repeat_val(X, N, [X|Xs0], Xs)
+    ).
+
+
 met(Pkg) :-
-    join(['CHECKING: ', Pkg], Msg),
-    writeln(Msg),
     platform(P),
     met(Pkg, P).
 
@@ -218,7 +240,16 @@ join(L, R) :- atomic_list_concat(L, R).
 linux_codename(Codename) :-
     shellc('lsb_release -c | sed \'s/^[^:]*:\\s//g\'', Codename).
 
+writeln_indent(L, D) :- write_indent(D), writeln(L).
 writeln_star(L) :- write(L), write(' *\n').
+write_indent(D) :-
+    ( D = 0 ->
+        true
+    ;
+        D1 is D - 1,
+        write('  '),
+        write_indent(D1)
+    ).
 
 writepkg(pkg(P, met)) :- writeln_star(P).
 writepkg(pkg(P, notmet)) :- writeln(P).
