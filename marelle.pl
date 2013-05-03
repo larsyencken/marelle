@@ -260,7 +260,7 @@ install_apt(Name) :-
     ;
         Sudo = 'sudo '
     ),
-    join([Sudo, 'apt-get install ', Name], Cmd),
+    join([Sudo, 'apt-get install -y ', Name], Cmd),
     shell(Cmd, 0).
 
 install_brew(Name) :-
