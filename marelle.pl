@@ -255,7 +255,12 @@ writepkg(pkg(P, met)) :- writeln_star(P).
 writepkg(pkg(P, notmet)) :- writeln(P).
 
 install_apt(Name) :-
-    join(['sudo apt-get install ', Name], Cmd),
+    ( shellc('whoami', root) ->
+        Sudo = ''
+    ;
+        Sudo = 'sudo '
+    ),
+    join([Sudo, 'apt-get install ', Name], Cmd),
     shell(Cmd, 0).
 
 install_brew(Name) :-
