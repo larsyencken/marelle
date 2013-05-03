@@ -267,7 +267,7 @@ home_dir(D0, D) :-
     join([Home, '/', D0], D).
 
 git_clone(Source, Dest) :-
-    join(['git clone ', Source, ' ', Dest], Cmd),
+    join(['git clone --recursive ', Source, ' ', Dest], Cmd),
     shell(Cmd, 0).
 
 %  command packages: met when their command is in path
