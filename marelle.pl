@@ -44,6 +44,7 @@ main :-
     main(Rest).
 
 main([scan|R]) :-
+    !,
     ( R = ['--all'] ->
         scan_packages(all)
     ; R = ['--missing'] ->
@@ -53,22 +54,21 @@ main([scan|R]) :-
     ).
 
 main([status, Pkg]) :-
+    !,
     ( met(Pkg) ->
-        Msg = 'OK'
+        writeln('ok')
     ;
-        Msg = 'NOT MET'
-    ),
-    writeln(Msg).
+        writeln('not met'),
+        fail
+    ).
 
-main([meet, Pkg]) :-
-    meet_recursive(Pkg).
+main([status, '-q', Pkg]) :- !, met(Pkg).
 
-main([platform]) :-
-    platform(Plat),
-    writeln(Plat).
+main([meet, Pkg]) :- !, meet_recursive(Pkg).
 
-main([debug]) :-
-    prolog.
+main([platform]) :- !, platform(Plat), writeln(Plat).
+
+main([debug]) :- !, prolog.
 
 main(_) :- !, usage.
 
@@ -188,8 +188,9 @@ load_deps(Dir) :-
 
 usage :-
     writeln('Usage: marelle scan'),
-    writeln('       marelle meet <pkg>'),
+    writeln('       marelle meet <target>'),
     writeln('       marelle platform'),
+    writeln('       marelle status [-q] <target>'),
     writeln(''),
     writeln('Detect and meet dependencies. Searches ~/.marelle/deps and the folder'),
     writeln('marelle-deps in the current directory if it exists.').
