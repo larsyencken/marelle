@@ -54,10 +54,16 @@ main([scan|R]) :-
 
 main([met, Pkg]) :-
     !,
-    ( met(Pkg) ->
-        writeln('ok')
+    ( pkg(Pkg) ->
+        ( met(Pkg) ->
+            writeln('ok')
+        ;
+            writeln('not met'),
+            fail
+        )
     ;
-        writeln('not met'),
+        join(['ERROR: ', Pkg, ' is not defined as a dep'], Msg),
+        writeln(Msg),
         fail
     ).
 
