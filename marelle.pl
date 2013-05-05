@@ -44,7 +44,6 @@ main :-
     main(Rest).
 
 main([scan|R]) :-
-    !,
     ( R = ['--all'] ->
         scan_packages(all)
     ; R = ['--missing'] ->
@@ -138,22 +137,26 @@ force_depends(Pkg, Deps) :-
 % scan_packages(+Visibility) is det.
 %   Print all supported packages, marking installed ones with an asterisk.
 scan_packages(Visibility) :-
-    writeln('Scanning packages...'),
+    writeln_stderr('Scanning packages...'),
     findall(P, package_state(P), Ps0),
     sort(Ps0, Ps1),
     ( Visibility = all ->
         Ps = Ps1
     ; Visibility = missing ->
-        include(missing, Ps1, Ps)
+        include(ismissing_ann, Ps1, Ps)
     ;
-        exclude(hidden, Ps1, Ps)
+        exclude(ishidden_ann, Ps1, Ps)
     ),
     maplist(writepkg, Ps).
 
-hidden(pkg(Pkg, _)) :- atom_concat('__', _, Pkg).
+ishidden(P) :- atom_concat('__', _, P).
 
-missing(pkg(_, notmet)).
+ishidden_ann(pkg(P, _)) :- ishidden(P).
 
+ismissing_ann(pkg(_, unmet)).
+
+% package_state(-Ann) is nondet
+%   Find a package and it's current state as either met or unmet.
 package_state(Ann) :-
     platform(Platform),
     pkg(Pkg),
@@ -161,7 +164,7 @@ package_state(Ann) :-
     ( met(Pkg, Platform) ->
         Ann = pkg(Pkg, met)
     ;
-        Ann = pkg(Pkg, notmet)
+        Ann = pkg(Pkg, unmet)
     ).
 
 % load_deps is det.
@@ -253,7 +256,7 @@ write_indent(D) :-
     ).
 
 writepkg(pkg(P, met)) :- writeln_star(P).
-writepkg(pkg(P, notmet)) :- writeln(P).
+writepkg(pkg(P, unmet)) :- writeln(P).
 
 install_apt(Name) :-
     ( shellc('whoami', root) ->
@@ -280,3 +283,9 @@ git_clone(Source, Dest) :-
 :- multifile command_pkg/1.
 pkg(P) :- command_pkg(P).
 met(P, _) :- command_pkg(P), which(P).
+
+writeln_stderr(S) :-
+    open('/dev/stderr', write, Stream),
+    write(Stream, S),
+    write(Stream, '\n'),
+    close(Stream).
