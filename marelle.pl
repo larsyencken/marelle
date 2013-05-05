@@ -83,21 +83,20 @@ meet_recursive(Pkg, Depth0) :-
     ( pkg(Pkg) ->
         join(['PRE-CHECK: ', Pkg], M0),
         writeln_indent(M0, Depth0),
-        ( met(Pkg) ->
+        ( cached_met(Pkg) ->
             join(['SUCCESS: ', Pkg], M1),
             writeln_indent(M1, Depth0)
         ; ( join(['MEETING: ', Pkg], M2),
             writeln_indent(M2, Depth0),
             force_depends(Pkg, Deps),
-            exclude(met, Deps, Missing),
             Depth is Depth0 + 1,
-            length(Missing, L),
+            length(Deps, L),
             repeat_val(Depth, L, Depths),
-            maplist(meet_recursive, Missing, Depths),
+            maplist(meet_recursive, Deps, Depths),
             meet(Pkg),
             join(['POST-CHECK: ', Pkg], M3),
             writeln_indent(M3, Depth0),
-            met(Pkg)
+            cached_met(Pkg)
         ) ->
             join(['SUCCESS: ', Pkg], M4),
             writeln_indent(M4, Depth0)
@@ -129,6 +128,15 @@ met(Pkg) :-
 meet(Pkg) :-
     platform(P),
     meet(Pkg, P).
+
+:- dynamic already_met/1.
+
+cached_met(Pkg) :-
+    ( already_met(Pkg) ->
+        true
+    ; met(Pkg) ->
+        assertz(already_met(Pkg))
+    ).
 
 % force_depends(+Pkg, -Deps) is det.
 %   Get a list of dependencies for the given package on this platform. If
@@ -164,10 +172,9 @@ ismissing_ann(pkg(_, unmet)).
 % package_state(-Ann) is nondet
 %   Find a package and it's current state as either met or unmet.
 package_state(Ann) :-
-    platform(Platform),
     pkg(Pkg),
     ground(Pkg),
-    ( met(Pkg, Platform) ->
+    ( cached_met(Pkg) ->
         Ann = pkg(Pkg, met)
     ;
         Ann = pkg(Pkg, unmet)
