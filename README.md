@@ -52,10 +52,13 @@ Make a `marelle-deps/` folder inside your project repo. Each package has two com
 For example, suppose I want to write a dep for Python that works on recent Ubuntu flavours. I might write:
 
 ```prolog
+% python is a target to meet
 pkg(python).
 
-met(python, linux(_)) :-
-    exists_file('/usr/bin/python').
+% it's installed if it exists at /usr/bin/python 
+met(python, linux(_)) :- exists_file('/usr/bin/python').
+
+% we can install by running apt-get in shell
 meet(python, linux(_)) :-
     % could also use: install_apt('python-dev')
     bash('sudo apt-get install -y python-dev').
