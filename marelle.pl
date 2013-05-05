@@ -73,7 +73,14 @@ main([meet, Pkg]) :- !, meet_recursive(Pkg).
 
 main([platform]) :- !, platform(Plat), writeln(Plat).
 
+% start an interactive prolog shell
 main([debug]) :- !, prolog.
+
+% run the command with profiling
+main([profile|Cmd]) :- !, profile(main(Cmd)).
+
+% time the command and count inferences
+main([time|Cmd]) :- !, time(main(Cmd)).
 
 main(_) :- !, usage.
 
