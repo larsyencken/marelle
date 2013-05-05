@@ -54,8 +54,11 @@ For example, suppose I want to write a dep for Python that works on recent Ubunt
 ```prolog
 pkg(python).
 
-met(python, linux(_)) :- exists_file('/usr/bin/python').
-meet(python, linux(_)) :- install_apt('python-dev').
+met(python, linux(_)) :-
+    exists_file('/usr/bin/python').
+meet(python, linux(_)) :-
+    % could also use: install_apt('python-dev')
+    bash('sudo apt-get install -y python-dev').
 ```
 
 To install python on a machine, I'd now run `marelle meet python`.
