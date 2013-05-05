@@ -11,7 +11,7 @@
 %
 %  pkg(python).
 %  met(python, _) :- which(python, _).
-%  meet(python, osx) :- shell('brew install python').
+%  meet(python, osx) :- bash('brew install python').
 %
 :- multifile pkg/1.
 :- multifile meet/2.
@@ -203,38 +203,30 @@ usage :-
 %   that command.
 which(Command, Path) :-
     join(['which ', Command], C),
-    shellc(C, Path).
+    bash_output(C, Path).
 
 % which(+Command) is semidet.
 %   See if a command is available in the current PATH.
 which(Command) :- which(Command, _).
 
-% shellc(+Cmd, -Output).
-%   Execute the command in a shellc, and fetch the output as an atom.
-shellc(Cmd, Output) :-
-    tmp_file(syscmd, TmpFile),
-    join([Cmd, ' >', TmpFile], Call),
-    shell(Call, 0),
-    read_file_to_codes(TmpFile, Codes, []),
-    atom_codes(Raw, Codes),
-    atom_concat(Output, '\n', Raw).
-
 % platform(-Platform).
-%   Determines the current platform (e.g. osx, ubuntu).
+%   Determines the current platform (e.g. osx, ubuntu). Needs to be called
+%   after detect_platform/0 has set the platform.
+platform(_) :- fail.
+
+% detect_platform is det.
+%   Sets platform/1 with the current platform.
 detect_platform :-
-    shellc('uname -s', Result),
-    ( Result = 'Linux' ->
-        ( which('lsb_release', _) ->
-            linux_codename(Codename),
-            Platform = linux(Codename)
-        ;
-            Platform = linux(unknown)
-        )
-    ; Result = 'Darwin' ->
+    bash_output('uname -s', OS),
+    ( OS = 'Linux' ->
+        linux_codename(Codename),
+        Platform = linux(Codename)
+    ; OS = 'Darwin' ->
         Platform = osx
     ;
         Platform = unknown
     ),
+    retractall(platform(_)),
     assertz(platform(Platform)).
 
 join(L, R) :- atomic_list_concat(L, R).
@@ -242,7 +234,13 @@ join(L, R) :- atomic_list_concat(L, R).
 % linux_codename(-Codename).
 %   Determine the codename of the linux release (e.g. precise).
 linux_codename(Codename) :-
-    shellc('lsb_release -c | sed \'s/^[^:]*:\\s//g\'', Codename).
+    ( ( which('lsb_release', _),
+        bash_output('lsb_release -c | sed \'s/^[^:]*:\\s//g\'', Codename)
+      ) ->
+      true
+    ;
+        Codename = unknown
+    ).
 
 writeln_indent(L, D) :- write_indent(D), writeln(L).
 writeln_star(L) :- write(L), write(' *\n').
@@ -259,17 +257,17 @@ writepkg(pkg(P, met)) :- writeln_star(P).
 writepkg(pkg(P, unmet)) :- writeln(P).
 
 install_apt(Name) :-
-    ( shellc('whoami', root) ->
+    ( bash_output('whoami', root) ->
         Sudo = ''
     ;
         Sudo = 'sudo '
     ),
     join([Sudo, 'apt-get install -y ', Name], Cmd),
-    shell(Cmd, 0).
+    bash(Cmd).
 
 install_brew(Name) :-
     join(['brew install ', Name], Cmd),
-    shell(Cmd, 0).
+    bash(Cmd).
 
 home_dir(D0, D) :-
     getenv('HOME', Home),
@@ -277,7 +275,7 @@ home_dir(D0, D) :-
 
 git_clone(Source, Dest) :-
     join(['git clone --recursive ', Source, ' ', Dest], Cmd),
-    shell(Cmd, 0).
+    bash(Cmd).
 
 %  command packages: met when their command is in path
 :- multifile command_pkg/1.
@@ -289,3 +287,25 @@ writeln_stderr(S) :-
     write(Stream, S),
     write(Stream, '\n'),
     close(Stream).
+
+% bash(+Cmd, -Code) is semidet.
+%   Execute the given command in shell. Catch signals in the subshell and
+%   cause it to fail if CTRL-C is given, rather than becoming interactive.
+%   Code is the exit code of the command.
+bash(Cmd, Code) :-
+    catch(shell(Cmd, Code), _, fail).
+
+% bash(+Cmd) is semidet.
+%   Run the command in shell and fail unless it returns with exit code 0.
+bash(Cmd) :- bash(Cmd, 0).
+
+% bash_output(+Cmd, -Output) is semidet.
+%   Run the command in shell and capture its stdout, trimming the last
+%   newline. Fails if the command doesn't return status code 0.
+bash_output(Cmd, Output) :-
+    tmp_file(syscmd, TmpFile),
+    join([Cmd, ' >', TmpFile], Call),
+    bash(Call),
+    read_file_to_codes(TmpFile, Codes, []),
+    atom_codes(Raw, Codes),
+    atom_concat(Output, '\n', Raw).
