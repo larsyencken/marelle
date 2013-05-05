@@ -292,7 +292,12 @@ writeln_stderr(S) :-
 %   Execute the given command in shell. Catch signals in the subshell and
 %   cause it to fail if CTRL-C is given, rather than becoming interactive.
 %   Code is the exit code of the command.
-bash(Cmd, Code) :-
+bash(Cmd0, Code) :-
+    ( is_list(Cmd0) ->
+        join(Cmd0, Cmd)
+    ;
+        Cmd = Cmd0
+    ),
     catch(shell(Cmd, Code), _, fail).
 
 % bash(+Cmd) is semidet.
