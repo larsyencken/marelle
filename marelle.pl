@@ -53,7 +53,7 @@ main([scan|R]) :-
         scan_packages(unprefixed)
     ).
 
-main([status, Pkg]) :-
+main([met, Pkg]) :-
     !,
     ( met(Pkg) ->
         writeln('ok')
@@ -62,7 +62,7 @@ main([status, Pkg]) :-
         fail
     ).
 
-main([status, '-q', Pkg]) :- !, met(Pkg).
+main([met, '-q', Pkg]) :- !, met(Pkg).
 
 main([meet, Pkg]) :- !, meet_recursive(Pkg).
 
@@ -188,9 +188,9 @@ load_deps(Dir) :-
 
 usage :-
     writeln('Usage: marelle scan'),
+    writeln('       marelle met [-q] <target>'),
     writeln('       marelle meet <target>'),
     writeln('       marelle platform'),
-    writeln('       marelle status [-q] <target>'),
     writeln(''),
     writeln('Detect and meet dependencies. Searches ~/.marelle/deps and the folder'),
     writeln('marelle-deps in the current directory if it exists.').
