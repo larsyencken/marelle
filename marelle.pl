@@ -109,7 +109,8 @@ meet_recursive(Pkg, Depth0) :-
             writeln_indent(M4, Depth0)
         ;
             join(['FAIL: ', Pkg, ' failed to converge'], M5),
-            writeln_indent(M5, Depth0)
+            writeln_indent(M5, Depth0),
+            fail
         )
     ;
         join(['ERROR: ', Pkg, ' is not defined as a dep'], M6),
