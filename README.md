@@ -10,6 +10,20 @@ Pre-alpha, but stabilizing.
 
 ![Hopscotch for Seniors](https://bytebucket.org/larsyencken/marelle/wiki/img/HopscotchForSeniors.jpg)
 
+## Features
+
+Marelle has some features common to other configuration management frameworks:
+
+- Checking and meeting dependencies (preconditions)
+- Testing whether a target installed correctly (post-conditions)
+- Ability to use platform-dependent instructions
+
+It also has some interesting differences:
+
+- Can write `met` conditions without a matching `meet` predicate
+- Dependencies can vary by platform
+- Succinct definition of new package classes using logical rules
+
 ## Installing marelle
 
 ### Quickstart
@@ -55,7 +69,7 @@ For example, suppose I want to write a dep for Python that works on recent Ubunt
 % python is a target to meet
 pkg(python).
 
-% it's installed if it exists at /usr/bin/python 
+% it's installed if it exists at /usr/bin/python
 met(python, linux(_)) :- exists_file('/usr/bin/python').
 
 % we can install by running apt-get in shell
