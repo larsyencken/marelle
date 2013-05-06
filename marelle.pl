@@ -69,7 +69,7 @@ main([met, Pkg]) :-
 
 main([met, '-q', Pkg]) :- !, met(Pkg).
 
-main([meet, Pkg]) :- !, meet_recursive(Pkg).
+main([meet|Pkgs]) :- !, maplist(meet_recursive, Pkgs).
 
 main([platform]) :- !, platform(Plat), writeln(Plat).
 
