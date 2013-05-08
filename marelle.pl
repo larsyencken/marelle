@@ -348,3 +348,11 @@ bash_output(Cmd, Output) :-
     read_file_to_codes(TmpFile, Codes, []),
     atom_codes(Raw, Codes),
     atom_concat(Output, '\n', Raw).
+
+:- dynamic marelle_has_been_updated/0.
+
+pkg(selfupdate).
+met(selfupdate, _) :- marelle_has_been_updated.
+meet(selfupdate, _) :-
+    bash('cd ~/.local/marelle && git pull'),
+    assertz(marelle_has_been_updated).
