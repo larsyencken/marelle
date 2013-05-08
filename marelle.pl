@@ -52,6 +52,18 @@ main([scan|R]) :-
         scan_packages(unprefixed)
     ).
 
+main([list]) :-
+    !,
+    findall(P, (pkg(P), \+ ishidden(P)), Ps0),
+    sort(Ps0, Ps),
+    (
+        member(P, Ps),
+        writeln(P),
+        fail
+    ;
+        true
+    ).
+
 main([met, Pkg]) :-
     !,
     ( pkg(Pkg) ->
@@ -211,7 +223,8 @@ load_deps(Dir) :-
     load_files(Deps).
 
 usage :-
-    writeln('Usage: marelle scan'),
+    writeln('Usage: marelle list'),
+    writeln('       marelle scan'),
     writeln('       marelle met [-q] <target>'),
     writeln('       marelle meet <target>'),
     writeln('       marelle platform'),
