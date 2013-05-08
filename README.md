@@ -124,4 +124,4 @@ Like both Babushka and Babashka, Marelle looks for deps in `~/.marelle/deps` and
 
 ## Examples
 
-See my [marelle-deps](https://bitbucket.org/larsyencken/marelle-deps) repo for working examples.
+See my [marelle-deps](https://github.com/larsyencken/marelle-deps) repo for working examples.
