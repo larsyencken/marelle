@@ -8,7 +8,7 @@ Marelle uses [logic programming](https://en.wikipedia.org/wiki/Logic_programming
 
 Pre-alpha, but stabilizing.
 
-![Hopscotch for Seniors](https://bytebucket.org/larsyencken/marelle/wiki/img/HopscotchForSeniors.jpg)
+![Hopscotch for Seniors](https://raw.github.com/wiki/larsyencken/marelle/img/HopscotchForSeniors.jpg)
 
 ## Features
 
