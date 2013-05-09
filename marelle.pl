@@ -52,9 +52,15 @@ main([scan|R]) :-
         scan_packages(unprefixed)
     ).
 
-main([list]) :-
+main([list|Rest]) :-
+    ( Rest = [] ; Rest = [Pattern] ),
     !,
-    findall(P, (pkg(P), \+ ishidden(P)), Ps0),
+    ( Rest = [] ->
+        findall(P, (pkg(P), \+ ishidden(P)), Ps0)
+    ; Rest = [Pattern] ->
+        join(['*', Pattern, '*'], Glob),
+        findall(P, (pkg(P), wildcard_match(Glob, P), \+ ishidden(P)), Ps0)
+    ),
     sort(Ps0, Ps),
     (
         member(P, Ps),
@@ -223,7 +229,7 @@ load_deps(Dir) :-
     load_files(Deps).
 
 usage :-
-    writeln('Usage: marelle list'),
+    writeln('Usage: marelle list [pattern]'),
     writeln('       marelle scan'),
     writeln('       marelle met [-q] <target>'),
     writeln('       marelle meet <target>'),
