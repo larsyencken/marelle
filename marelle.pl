@@ -29,7 +29,6 @@
 % meet(+Pkg, +Platform) is semidet.
 %   Try to install this package.
 
-
 %
 %  CORE CODE
 %
@@ -366,3 +365,11 @@ met(selfupdate, _) :- marelle_has_been_updated.
 meet(selfupdate, _) :-
     bash('cd ~/.local/marelle && git pull'),
     assertz(marelle_has_been_updated).
+
+:- include('00-util').
+:- include('01-python').
+:- include('02-fs').
+:- include('03-homebrew').
+:- include('04-apt').
+:- include('05-git').
+:- include('06-meta').
