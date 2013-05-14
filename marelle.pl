@@ -319,8 +319,12 @@ git_clone(Source, Dest) :-
 
 %  command packages: met when their command is in path
 :- multifile command_pkg/1.
-pkg(P) :- command_pkg(P).
-met(P, _) :- command_pkg(P), which(P).
+:- multifile command_pkg/2.
+
+pkg(P) :- command_pkg(P, _).
+met(P, _) :- command_pkg(P, Cmd), which(Cmd).
+
+command_pkg(P, P) :- command_pkg(P).
 
 writeln_stderr(S) :-
     open('/dev/stderr', write, Stream),
