@@ -29,6 +29,11 @@
 % meet(+Pkg, +Platform) is semidet.
 %   Try to install this package.
 
+% where to look for dependencies
+marelle_search_path('~/.marelle/deps').
+marelle_search_path('marelle-deps').
+marelle_search_path('deps').
+
 %
 %  CORE CODE
 %
@@ -209,15 +214,13 @@ package_state(Ann) :-
 %   Looks for dependency files to load from a per-user directory and from
 %   a project specific directory.
 load_deps :-
-    getenv('HOME', Home),
-    join([Home, '/.marelle/deps'], PersonalDeps),
-    ( exists_directory(PersonalDeps) ->
-        load_deps(PersonalDeps)
-    ;
+    findall(P, (
+        marelle_search_path(P0),
+        expand_path(P0, P),
+        exists_directory(P)
+    ), Ps),
+    ( maplist(load_deps, Ps) ->
         true
-    ),
-    ( exists_directory('marelle-deps') ->
-        load_deps('marelle-deps')
     ;
         true
     ).
