@@ -31,7 +31,7 @@ It also has some interesting differences:
 Run the bootstrap script:
 
 ```bash
-bash -c "`curl https://bitbucket.org/larsyencken/marelle/raw/master/bootstrap.sh`"
+bash -c "`curl https://raw.github.com/larsyencken/marelle/master/bootstrap.sh`"
 ```
 
 This will install marelle as the current user, putting the executable in `~/.local/bin/marelle`.
