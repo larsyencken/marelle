@@ -376,4 +376,5 @@ meet(selfupdate, _) :-
 :- include('04-apt').
 :- include('05-git').
 :- include('06-meta').
+:- include('07-managed').
 :- include('sudo').
