@@ -73,3 +73,17 @@ install_pip(Pkg) :-
     join(['Installing ', Pkg, ' with pip'], Msg),
     writeln(Msg),
     bash(['umask a+rx && ', Sudo, 'pip install -U ', Pkg]).
+
+pkg(python).
+installs_with_brew(python).
+installs_with_apt(python, 'python-dev').
+
+command_pkg(pip).
+meet(pip, linux(_)) :-
+    install_apt('python-pip').
+depends(pip, linux(_), ['build-essential']).
+
+pkg('build-essential').
+installs_with_apt('build-essential').
+
+depends(pip, _, [python]).
