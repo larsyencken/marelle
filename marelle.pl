@@ -110,12 +110,10 @@ meet_recursive(Pkg) :- meet_recursive(Pkg, 0).
 
 meet_recursive(Pkg, Depth0) :-
     ( pkg(Pkg) ->
-        join(['PRE-CHECK: ', Pkg], M0),
-        writeln_indent(M0, Depth0),
         ( cached_met(Pkg) ->
-            join(['SUCCESS: ', Pkg], M1),
-            writeln_indent(M1, Depth0)
-        ; ( join(['MEETING: ', Pkg], M2),
+            join([Pkg, ' ✓'], M0),
+            writeln_indent(M0, Depth0)
+        ; ( join([Pkg, ' {'], M2),
             writeln_indent(M2, Depth0),
             force_depends(Pkg, Deps),
             Depth is Depth0 + 1,
@@ -123,14 +121,12 @@ meet_recursive(Pkg, Depth0) :-
             repeat_val(Depth, L, Depths),
             maplist(meet_recursive, Deps, Depths),
             meet(Pkg),
-            join(['POST-CHECK: ', Pkg], M3),
-            writeln_indent(M3, Depth0),
             cached_met(Pkg)
         ) ->
-            join(['SUCCESS: ', Pkg], M4),
+            join(['} ok ✓'], M4),
             writeln_indent(M4, Depth0)
         ;
-            join(['FAIL: ', Pkg, ' failed to converge'], M5),
+            join(['} fail ✗'], M5),
             writeln_indent(M5, Depth0),
             fail
         )
