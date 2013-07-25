@@ -4,11 +4,11 @@ Test-driven system administration in SWI-Prolog, in the style of [Babushka](http
 
 Marelle uses [logic programming](https://en.wikipedia.org/wiki/Logic_programming) to describe system targets and rules by which these targets can be met. Prolog's built-in search mechanism makes writing and using these dependencies elegant. Anecdotally, writing deps for Marelle has the feel of teaching it about types of packages, rather than the feel of writing package templates.
 
+![Hopscotch for Seniors](https://raw.github.com/wiki/larsyencken/marelle/img/HopscotchForSeniors.jpg)
+
 ## Current status
 
-Pre-alpha, but stabilizing.
-
-![Hopscotch for Seniors](https://raw.github.com/wiki/larsyencken/marelle/img/HopscotchForSeniors.jpg)
+Working and in active use.
 
 ## Features
 
@@ -20,9 +20,9 @@ Marelle has some features common to other configuration management frameworks:
 
 It also has some interesting differences:
 
-- Can write `met` conditions without a matching `meet` predicate
-- Dependencies can vary by platform
-- Succinct definition of new package classes using logical rules
+- Can write checks (`met` predicates) without needing to say how to meet them (`meet` predicates)
+- The dependencies of a target can vary by platform
+- Succinct definition of new classes of packages using logical rules
 
 ## Installing marelle
 
