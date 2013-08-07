@@ -1,0 +1,189 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Marelle by larsyencken</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Marelle</h1>
+        <p>Test-driven system administration with a little extra logic.</p>
+
+        <p class="view"><a href="https://github.com/larsyencken/marelle">View the Project on GitHub <small>larsyencken/marelle</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/larsyencken/marelle/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/larsyencken/marelle/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/larsyencken/marelle">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>
+<a name="marelle-hopscotch" class="anchor" href="#marelle-hopscotch"><span class="octicon octicon-link"></span></a>Marelle ("hopscotch")</h1>
+
+<p>Test-driven system administration in SWI-Prolog, in the style of <a href="https://github.com/babushka/babushka">Babushka</a>.</p>
+
+<p>Marelle uses <a href="https://en.wikipedia.org/wiki/Logic_programming">logic programming</a> to describe system targets and rules by which these targets can be met. Prolog's built-in search mechanism makes writing and using these dependencies elegant. Anecdotally, writing deps for Marelle has the feel of teaching it about types of packages, rather than the feel of writing package templates.</p>
+
+<p><img src="https://raw.github.com/wiki/larsyencken/marelle/img/HopscotchForSeniors.jpg" alt="Hopscotch for Seniors"></p>
+
+<h2>
+<a name="current-status" class="anchor" href="#current-status"><span class="octicon octicon-link"></span></a>Current status</h2>
+
+<p>Working and in active use.</p>
+
+<h2>
+<a name="features" class="anchor" href="#features"><span class="octicon octicon-link"></span></a>Features</h2>
+
+<p>Marelle has some features common to other configuration management frameworks:</p>
+
+<ul>
+<li>Checking and meeting dependencies (preconditions)</li>
+<li>Testing whether a target installed correctly (post-conditions)</li>
+<li>Ability to use platform-dependent instructions</li>
+</ul><p>It also has some interesting differences:</p>
+
+<ul>
+<li>Can write checks (<code>met</code> predicates) without needing to say how to meet them (<code>meet</code> predicates)</li>
+<li>The dependencies of a target can vary by platform</li>
+<li>Succinct definition of new classes of packages using logical rules</li>
+</ul><h2>
+<a name="installing-marelle" class="anchor" href="#installing-marelle"><span class="octicon octicon-link"></span></a>Installing marelle</h2>
+
+<h3>
+<a name="quickstart" class="anchor" href="#quickstart"><span class="octicon octicon-link"></span></a>Quickstart</h3>
+
+<p>Run the bootstrap script:</p>
+
+<div class="highlight"><pre>bash -c <span class="s2">"`curl https://raw.github.com/larsyencken/marelle/master/bootstrap.sh`"</span>
+</pre></div>
+
+<p>This will install marelle as the current user, putting the executable in <code>~/.local/bin/marelle</code>.</p>
+
+<h3>
+<a name="manual-version" class="anchor" href="#manual-version"><span class="octicon octicon-link"></span></a>Manual version</h3>
+
+<ol>
+<li>Get Prolog
+
+<ul>
+<li>On OS X, with Homebrew: <code>brew install swi-prolog</code>
+</li>
+<li>On Ubuntu, with apt-get: <code>sudo apt-get install swi-prolog-nox</code>
+</li>
+</ul>
+</li>
+<li>Get git
+
+<ul>
+<li>On OS X, with Homebrew: <code>brew install git</code>
+</li>
+<li>On Ubuntu, with apt-get: <code>sudo apt-get install git</code>
+</li>
+</ul>
+</li>
+<li>Clone and set up marelle</li>
+</ol><div class="highlight"><pre><span class="c"># clone the repo</span>
+mkdir -p ~/.local
+git clone https://bitbucket.org/larsyencken/marelle ~/.local/marelle
+
+<span class="c"># set up an executable</span>
+cat &gt;~/.local/bin/marelle <span class="s">&lt;&lt;EOF</span>
+<span class="s">#!/bin/bash</span>
+<span class="s">exec swipl -q -t main -s ~/.local/marelle/marelle.pl "$@"</span>
+<span class="s">EOF</span>
+chmod a+x ~/.local/bin/marelle
+</pre></div>
+
+<h2>
+<a name="writing-deps" class="anchor" href="#writing-deps"><span class="octicon octicon-link"></span></a>Writing deps</h2>
+
+<p>Make a <code>marelle-deps/</code> folder inside your project repo. Each package has two components, a <code>met/2</code> goal which checks if the dependency is met, and an <code>meet/2</code> goal with instructions on how to actually meet it if it's missing.</p>
+
+<p>For example, suppose I want to write a dep for Python that works on recent Ubuntu flavours. I might write:</p>
+
+<div class="highlight"><pre><span class="c1">% python is a target to meet</span>
+<span class="nf">pkg</span><span class="p">(</span><span class="s-Atom">python</span><span class="p">).</span>
+
+<span class="c1">% it's installed if it exists at /usr/bin/python</span>
+<span class="nf">met</span><span class="p">(</span><span class="s-Atom">python</span><span class="p">,</span> <span class="nf">linux</span><span class="p">(</span><span class="k">_</span><span class="p">))</span> <span class="p">:-</span> <span class="nf">exists_file</span><span class="p">(</span><span class="s-Atom">'/usr/bin/python'</span><span class="p">).</span>
+
+<span class="c1">% we can install by running apt-get in shell</span>
+<span class="nf">meet</span><span class="p">(</span><span class="s-Atom">python</span><span class="p">,</span> <span class="nf">linux</span><span class="p">(</span><span class="k">_</span><span class="p">))</span> <span class="p">:-</span>
+    <span class="c1">% could also use: install_apt('python-dev')</span>
+    <span class="nf">bash</span><span class="p">(</span><span class="s-Atom">'sudo apt-get install -y python-dev'</span><span class="p">).</span>
+</pre></div>
+
+<p>To install python on a machine, I'd now run <code>marelle meet python</code>.</p>
+
+<p>To install pip, I might write:</p>
+
+<div class="highlight"><pre><span class="nf">pkg</span><span class="p">(</span><span class="s-Atom">pip</span><span class="p">).</span>
+
+<span class="c1">% pip is installed if we can run it</span>
+<span class="nf">met</span><span class="p">(</span><span class="s-Atom">pip</span><span class="p">,</span> <span class="k">_</span><span class="p">)</span> <span class="p">:-</span> <span class="nf">which</span><span class="p">(</span><span class="s-Atom">pip</span><span class="p">).</span>
+
+<span class="c1">% on all flavours of linux, try to install the python-pip package</span>
+<span class="nf">meet</span><span class="p">(</span><span class="s-Atom">pip</span><span class="p">,</span> <span class="nf">linux</span><span class="p">(</span><span class="k">_</span><span class="p">))</span> <span class="p">:-</span> <span class="nf">install_apt</span><span class="p">(</span><span class="s-Atom">'python-pip'</span><span class="p">).</span>
+
+<span class="c1">% on all platforms, pip depends on python</span>
+<span class="nf">depends</span><span class="p">(</span><span class="s-Atom">pip</span><span class="p">,</span> <span class="k">_</span><span class="p">,</span> <span class="p">[</span><span class="s-Atom">python</span><span class="p">]).</span>
+</pre></div>
+
+<p>Note our our use of platform specifiers and the <code>_</code> wildcard in their place. To see your current platform as described by marelle, run <code>marelle platform</code>. Examples include: <code>osx</code>, <code>linux(precise)</code> and <code>linux(raring)</code>.</p>
+
+<h2>
+<a name="running-deps" class="anchor" href="#running-deps"><span class="octicon octicon-link"></span></a>Running deps</h2>
+
+<h3>
+<a name="see-available-deps" class="anchor" href="#see-available-deps"><span class="octicon octicon-link"></span></a>See available deps</h3>
+
+<p>This runs every <code>met/2</code> statement that's valid for your platform.</p>
+
+<p><code>marelle scan</code></p>
+
+<h3>
+<a name="install-something" class="anchor" href="#install-something"><span class="octicon octicon-link"></span></a>Install something</h3>
+
+<p>This will run the <code>meet/2</code> clause for your package, provided a valid one exists for your current platform.</p>
+
+<p><code>marelle meet python</code></p>
+
+<h3>
+<a name="see-your-platform" class="anchor" href="#see-your-platform"><span class="octicon octicon-link"></span></a>See your platform</h3>
+
+<p>To find the right platform code to use in deps you're writing, run:</p>
+
+<p><code>marelle platform</code></p>
+
+<p>It reports the code for the platform you're currently on.</p>
+
+<h2>
+<a name="where-to-put-your-deps" class="anchor" href="#where-to-put-your-deps"><span class="octicon octicon-link"></span></a>Where to put your deps</h2>
+
+<p>Like both Babushka and Babashka, Marelle looks for deps in <code>~/.marelle/deps</code> and in a folder called <code>marelle-deps</code> in the current directory, if either exists. This allows you to set up a personal set of deps for your environment, as well as project-specific deps.</p>
+
+<h2>
+<a name="examples" class="anchor" href="#examples"><span class="octicon octicon-link"></span></a>Examples</h2>
+
+<p>See my <a href="https://github.com/larsyencken/marelle-deps">marelle-deps</a> repo for working examples.</p>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/larsyencken">larsyencken</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
