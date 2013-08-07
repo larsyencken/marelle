@@ -228,7 +228,7 @@ load_deps(Dir) :-
 
 usage :-
     writeln('Usage: marelle list [pattern]'),
-    writeln('       marelle scan'),
+    writeln('       marelle scan [--all | --missing]'),
     writeln('       marelle met [-q] <target>'),
     writeln('       marelle meet <target>'),
     writeln('       marelle platform'),
