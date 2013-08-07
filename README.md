@@ -1,6 +1,6 @@
 # Marelle ("hopscotch")
 
-Test-driven system administration in SWI-Prolog, in the style of [Babushka](https://github.com/babushka/babushka).
+Test-driven system administration in SWI-Prolog, in the style of [Babushka](https://github.com/benhoskings/babushka).
 
 Marelle uses [logic programming](https://en.wikipedia.org/wiki/Logic_programming) to describe system targets and rules by which these targets can be met. Prolog's built-in search mechanism makes writing and using these dependencies elegant. Anecdotally, writing deps for Marelle has the feel of teaching it about types of packages, rather than the feel of writing package templates.
 
