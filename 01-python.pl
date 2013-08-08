@@ -12,16 +12,25 @@
 :- multifile python_pkg/2.
 
 % pip_pkg(-Pkg) is nondet.
-%   Pkg is a python module installable with pip.
+%   Pkg is a python module installable with pip. (satisfies met and meet
+%   blocks)
 :- multifile pip_pkg/1.
 
 % pip_pkg(-Pkg, -PkgName) is nondet.
-%   Pkg is a python module installable with pip.
+%   Pkg is a python module installable with pip. (satisfies met and meet
+%   blocks)
 :- multifile pip_pkg/2.
 
 % pip_pkg(-Pkg, -PkgName, -PkgSource) is nondet.
-%   Pkg is a python module installable with pip.
+%   Pkg is a python module installable with pip. (satisfies met and meet
+%   blocks)
 :- multifile pip_pkg/3.
+
+% installs_with_pip(-Pkg) is nondet.
+% installs_with_pip(-Pkg, -PkgSource) is nondet.
+%   Pkg is installed with pip as PkgSource. (satisfies meet block only)
+:- multifile installs_with_pip/2.
+:- multifile installs_with_pip/1.
 
 pip_pkg(P, P, P) :- pip_pkg(P).
 pip_pkg(P, PkgName, PkgName) :- pip_pkg(P, PkgName).
@@ -55,9 +64,13 @@ met(P, _) :-
     pip_pkg(P, PkgName, _), !,
     bash(['pip freeze 2>/dev/null | cut -d \'=\' -f 1 | fgrep -qi ', PkgName]).
 
-%  meet pip packages on any platform by installing them with pip
+%  all pip packages install using pip
+installs_with_pip(P, PkgSource) :- pip_pkg(P, _, PkgSource).
+installs_with_pip(P, P) :- installs_with_pip(P).
+
+%  meet anything that installs with pip with by actually using pip
 meet(P, _) :-
-    pip_pkg(P, _, PkgSource), !,
+    installs_with_pip(P, PkgSource),
     install_pip(PkgSource).
 
 % install_pip(+Pkg) is semidet.
