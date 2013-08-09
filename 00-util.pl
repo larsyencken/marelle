@@ -26,5 +26,5 @@ make_executable(Path) :-
     bash(Cmd).
 
 curl(Source, Dest) :-
-    join(['curl -o ', Dest, ' ', Source], Cmd),
+    join(['curl -s -o ', Dest, ' ', Source], Cmd),
     bash(Cmd).
