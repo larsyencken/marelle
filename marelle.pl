@@ -183,7 +183,8 @@ scan_packages(Visibility) :-
     ( Visibility = all ->
         Ps = Ps1
     ; Visibility = missing ->
-        include(ismissing_ann, Ps1, Ps)
+        include(ismissing_ann, Ps1, Ps2),
+        exclude(ishidden_ann, Ps2, Ps)
     ;
         exclude(ishidden_ann, Ps1, Ps)
     ),
