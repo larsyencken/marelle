@@ -49,9 +49,10 @@ This will install marelle as the current user, putting the executable in `~/.loc
 ```bash
 # clone the repo
 mkdir -p ~/.local
-git clone https://bitbucket.org/larsyencken/marelle ~/.local/marelle
+git clone https://github.com/larsyencken/marelle ~/.local/marelle
 
-# set up an executable
+# set up an executable in ~/.local/bin
+mkdir -p ~/.local/bin
 cat >~/.local/bin/marelle <<EOF
 #!/bin/bash
 exec swipl -q -t main -s ~/.local/marelle/marelle.pl "$@"
