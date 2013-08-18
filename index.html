@@ -98,7 +98,7 @@ mkdir -p ~/.local
 git clone https://github.com/larsyencken/marelle ~/.local/marelle
 
 <span class="c"># set up an executable</span>
-mkdir ~/.local/bin
+mkdir -p ~/.local/bin
 cat &gt;~/.local/bin/marelle <span class="s">&lt;&lt;EOF</span>
 <span class="s">#!/bin/bash</span>
 <span class="s">exec swipl -q -t main -s ~/.local/marelle/marelle.pl "$@"</span>
