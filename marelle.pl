@@ -40,23 +40,28 @@ marelle_search_path('deps').
 %
 
 main :-
-    current_prolog_flag(argv, Argv),
-    append(Front, Rest, Argv),
-    length(Front, 6), !,
+    ( current_prolog_flag(os_argv, Argv) ->
+        true
+	; current_prolog_flag(argv, Argv)
+	),
+    append([_,_,_,_,_,_], Args, Argv),
     detect_platform,
     load_deps,
-    main(Rest).
+	( Args = [Command|Rest] ->
+	   main(Command, Rest)
+	;  usage
+	).
 
-main([scan|R]) :-
-    ( R = ['--all'] ->
+main(scan, Rest) :-
+    ( Rest = ['--all'] ->
         scan_packages(all)
-    ; R = ['--missing'] ->
+    ; Rest = ['--missing'] ->
         scan_packages(missing)
-    ; R = [] ->
+    ; Rest = [] ->
         scan_packages(unprefixed)
     ).
 
-main([list|Rest]) :-
+main(list, Rest) :-
     ( Rest = [] ; Rest = [Pattern] ),
     !,
     ( Rest = [] ->
@@ -74,7 +79,7 @@ main([list|Rest]) :-
         true
     ).
 
-main([met, Pkg]) :-
+main(met, [Pkg]) :-
     !,
     ( pkg(Pkg) ->
         ( met(Pkg) ->
@@ -89,22 +94,22 @@ main([met, Pkg]) :-
         fail
     ).
 
-main([met, '-q', Pkg]) :- !, met(Pkg).
+main(met, ['-q', Pkg]) :- !, met(Pkg).
 
-main([meet|Pkgs]) :- !, maplist(meet_recursive, Pkgs).
+main(meet, Pkgs) :- !, maplist(meet_recursive, Pkgs).
 
-main([platform]) :- !, platform(Plat), writeln(Plat).
+main(platform, []) :- !, platform(Plat), writeln(Plat).
 
 % start an interactive prolog shell
-main([debug]) :- !, prolog.
+main(debug, []) :- !, prolog.
 
 % run the command with profiling
-main([profile|Cmd]) :- !, profile(main(Cmd)).
+main(profile, [Cmd|Rest]) :- !, profile(main(Cmd, Rest)).
 
 % time the command and count inferences
-main([time|Cmd]) :- !, time(main(Cmd)).
+main(time, [Cmd|Rest]) :- !, time(main(Cmd, Rest)).
 
-main(_) :- !, usage.
+main(_, _) :- !, usage.
 
 meet_recursive(Pkg) :- meet_recursive(Pkg, 0).
 
