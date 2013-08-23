@@ -45,8 +45,7 @@ main :-
     ;
         current_prolog_flag(argv, Argv)
     ),
-    append(Front, Rest, Argv),
-    length(Front, 6), !,
+    append([_, _, _, _, _, _], Rest, Argv),
     detect_platform,
     load_deps,
     main(Rest).
