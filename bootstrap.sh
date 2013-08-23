@@ -8,11 +8,28 @@ function missing_exec() {
   [ -z "$(which $1)" ]
 }
 
+is_apt_updated=0
+function apt_update() {
+  if [ $is_apt_updated -eq 0 ]; then
+    sudo apt-get update
+    is_apt_updated=1
+  fi
+}
+
+is_brew_updated=0
+function brew_update() {
+  if [ $is_brew_updated -eq 0 ]; then
+    brew update
+    is_brew_updated=1
+  fi
+}
+
 function install_git() {
   echo 'Trying to install git'
   case $(uname -s) in
     Darwin)
       if has_exec brew; then
+        brew_update
         brew install git
       else
         bail "Please install Homebrew and retry"
@@ -20,8 +37,10 @@ function install_git() {
       ;;
     Linux)
       if has_exec apt-get; then
+        apt_update
         sudo apt-get install -y git
       elif has_exec yum; then
+        # XXX yum update?
         sudo yum install git
       else
         bail "Unknown linux variant"
@@ -38,6 +57,7 @@ function install_prolog() {
   case $(uname -s) in
     Darwin)
       if has_exec brew; then
+        brew_update
         brew install swi-prolog
       else
         bail "Please install Homebrew and retry"
@@ -45,6 +65,7 @@ function install_prolog() {
       ;;
     Linux)
       if has_exec apt-get; then
+        apt_update
         sudo apt-get install -y swi-prolog-nox
       elif has_exec yum; then
         sudo yum install swi-prolog
