@@ -42,8 +42,9 @@ marelle_search_path('deps').
 main :-
     ( current_prolog_flag(os_argv, Argv) ->
         true
-	; current_prolog_flag(argv, Argv)
-	),
+    ;
+        current_prolog_flag(argv, Argv)
+    ),
     append(Front, Rest, Argv),
     length(Front, 6), !,
     detect_platform,
