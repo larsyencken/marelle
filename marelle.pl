@@ -48,8 +48,8 @@ main :-
     append([_, _, _, _, _, _], Rest, Argv),
     detect_platform,
     load_deps,
-    ( Args = [Command|Rest] ->
-        main(Command, Rest)
+    ( Rest = [Command|SubArgs] ->
+        main(Command, SubArgs)
     ;
         usage
     ).
