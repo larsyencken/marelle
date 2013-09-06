@@ -99,7 +99,6 @@ function checkout_marelle() {
   cd "$(dirname ${DEST_DIR})"
   sudo git clone https://github.com/larsyencken/marelle
   sudo bash -c "cat > ${DEST_BIN}" <<EOF
-  cat >~/.local/bin/marelle <<EOF
 #!/bin/bash
 exec swipl -q -t main -s "${DEST_DIR}/marelle.pl" "\$@"
 EOF
