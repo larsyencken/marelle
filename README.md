@@ -127,4 +127,8 @@ Like both Babushka and Babashka, Marelle looks for deps in `~/.marelle/deps` and
 
 See my [marelle-deps](https://github.com/larsyencken/marelle-deps) repo for working examples.
 
+## Developing
+
+Run `make test` to run the test suite.
+
 [![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/larsyencken/marelle/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
