@@ -1,5 +1,5 @@
 #!/bin/bash
 
-sudo apt-add-repository ppa:swi-prolog/stable
+sudo apt-add-repository -y ppa:swi-prolog/stable
 sudo apt-get update
-sudo apt-get install swi-prolog
+sudo apt-get install -y swi-prolog
