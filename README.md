@@ -1,5 +1,7 @@
 # Marelle ("hopscotch")
 
+[![Build Status](https://travis-ci.org/larsyencken/marelle.png)](https://travis-ci.org/larsyencken/marelle) [![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/larsyencken/marelle/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
 Test-driven system administration in SWI-Prolog, in the style of [Babushka](https://github.com/benhoskings/babushka).
 
 Marelle uses [logic programming](https://en.wikipedia.org/wiki/Logic_programming) to describe system targets and rules by which these targets can be met. Prolog's built-in search mechanism makes writing and using these dependencies elegant. Anecdotally, writing deps for Marelle has the feel of teaching it about types of packages, rather than the feel of writing package templates.
@@ -130,5 +132,3 @@ See my [marelle-deps](https://github.com/larsyencken/marelle-deps) repo for work
 ## Developing
 
 Run `make test` to run the test suite.
-
-[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/larsyencken/marelle/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
