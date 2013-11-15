@@ -265,8 +265,8 @@ platform(_) :- fail.
 detect_platform :-
     bash_output('uname -s', OS),
     ( OS = 'Linux' ->
-        linux_codename(Codename),
-        Platform = linux(Codename)
+        linux_name(Name),
+        Platform = linux(Name)
     ; OS = 'Darwin' ->
         Platform = osx
     ;
@@ -277,16 +277,20 @@ detect_platform :-
 
 join(L, R) :- atomic_list_concat(L, R).
 
-% linux_codename(-Codename).
+% linux_name(-Name).
 %   Determine the codename of the linux release (e.g. precise).
-linux_codename(Codename) :-
-    ( ( which('lsb_release', _),
-        bash_output('lsb_release -c | sed \'s/^[^:]*:\\s//g\'', Codename)
-      ) ->
-      true
-    ;
-        Codename = unknown
-    ).
+%   If there can be no codename found, determine the short distro name (e.g. arch)%   Otherwise codename is unknown
+linux_name(Name) :-
+    which('lsb_release', _),
+    bash_output('lsb_release -c | sed \'s/^[^:]*:\\s//g\'', Name),
+    dif(Name,'n/a').
+linux_name(Name) :-
+    which('lsb_release', _),
+    bash_output('lsb_release -i | sed \'s/[A-Za-z ]*:\t//\'', CapitalName),
+    dif(CapitalName,'n/a'),
+    downcase_atom(CapitalName, Name).
+linux_name(unknown).
+
 
 writeln_indent(L, D) :- write_indent(D), writeln(L).
 writeln_star(L) :- write(L), write(' *\n').
