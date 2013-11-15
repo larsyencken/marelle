@@ -29,4 +29,17 @@ test(isfile) :-
     bash('touch /tmp/7e1b960e8ccf8ed248d05f1803791da7'),
     isfile('/tmp/7e1b960e8ccf8ed248d05f1803791da7').
 
+test(interpolate) :-
+    interpolate('', [], ''),
+    interpolate('Ohai', [], 'Ohai'),
+    interpolate('{} says hello', ['Bob'], 'Bob says hello'),
+    interpolate('Hello {}', ['Bob'], 'Hello Bob'),
+    interpolate('{}, {}, {}', ['Once', 'twice', 'three times'],
+        'Once, twice, three times'),
+    \+ catch(
+        interpolate('{} and {}', [romeo], X),
+        'wrong number of arguments in interpolation',
+        fail
+    ).
+
 :- end_tests(marelle).
