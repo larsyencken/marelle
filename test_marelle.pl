@@ -42,4 +42,11 @@ test(sformat) :-
         fail
     ).
 
+test(join) :-
+    join([], ''),
+    join([''], ''),
+    join(['one'], 'one'),
+    join(['one', ' two'], 'one two'),
+    join(['one', ' two', ' and three'], 'one two and three').
+
 :- end_tests(marelle).
