@@ -29,15 +29,15 @@ curl(Source, Dest) :-
     join(['curl -s -o ', Dest, ' ', Source], Cmd),
     bash(Cmd).
 
-% interpolate(+S0, +Vars, -S) is semidet.
+% sformat(+S0, +Vars, -S) is semidet.
 %   String interpolation, where {} is replaced by an argument in the list.
 %   Will fail if the number of {} is not the same as the number of vars passed
 %   in.
 %
-%   interpolate('Hello {}!', ['Bob'], 'Hello Bob!').
+%   sformat('Hello ~a!', ['Bob'], 'Hello Bob!').
 %
-interpolate(S0, Vars, S) :-
-    atomic_list_concat(Parts, '{}', S0),
+sformat(S0, Vars, S) :-
+    atomic_list_concat(Parts, '~a', S0),
     ( length(Vars, N), N1 is N + 1, length(Parts, N1) ->
         true
     ;
