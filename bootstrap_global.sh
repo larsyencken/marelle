@@ -108,20 +108,6 @@ EOF
   fi
 }
 
-function put_marelle_in_path() {
-  echo 'Checking if marelle is in PATH'
-  if [ -f ~/.bash_profile ]; then
-    echo 'export PATH=~/.local/bin:$PATH' >>~/.bash_profile
-    source ~/.bash_profile
-  elif [ -f ~/.profile ]; then
-    echo 'export PATH=~/.local/bin:$PATH' >>~/.profile
-    source ~/.profile
-  fi
-  if missing_exec marelle; then
-    bail "Couldn't set up marelle in PATH"
-  fi
-}
-
 function main() {
   echo 'BOOTSTRAPPING MARELLE'
   if missing_exec git; then
