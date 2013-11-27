@@ -11,3 +11,4 @@ pkg(P) :- managed_pkg(P).
 
 installs_with_apt(P) :- managed_pkg(P).
 installs_with_brew(P) :- managed_pkg(P).
+installs_with_pacman(P) :- managed_pkg(P).
