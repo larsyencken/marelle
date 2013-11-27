@@ -23,17 +23,17 @@ meet('pacman-update', linux(arch)) :-
     assertz(apt_updated).
 
 % attempt to install a package with pacman
-install_packman(Pkg) :-
+install_pacman(Pkg) :-
     bash(['sudo pacman -S --noconfirm ', Pkg]).
 
 % succeed only if the package is already installed
-check_packman(Pkg) :-
+check_pacman(Pkg) :-
     bash(['pacman -Qs ', Pkg]).
 
 met(P, linux(arch)) :-
     installs_with_pacman(P, PkgName), !,
-    check_packman(PkgName).
+    check_pacman(PkgName).
 
 meet(P, linux(arch)) :-
-    installs_with_packman(P, PkgName), !,
-    install_packman(PkgName).
+    installs_with_pacman(P, PkgName), !,
+    install_pacman(PkgName).
