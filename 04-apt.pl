@@ -33,6 +33,7 @@ meet('apt-get-update', linux(_)) :-
     assertz(apt_updated).
 
 met(P, linux(Codename)) :-
+    isfile('/usr/bin/apt-get'),
     installs_with_apt(P, Codename, PkgName), !,
     ( is_list(PkgName) ->
         maplist(check_dpkg, PkgName)
@@ -41,6 +42,7 @@ met(P, linux(Codename)) :-
     ).
 
 meet(P, linux(Codename)) :-
+    isfile('/usr/bin/apt-get'),
     installs_with_apt(P, Codename, PkgName), !,
     ( is_list(PkgName) ->
         maplist(install_apt, PkgName)
