@@ -14,39 +14,26 @@
 
 installs_with_pacman(P, P) :- installs_with_pacman(P).
 
-% installs_with_pacman(Pkg, Codename, PacName).
-%   Pkg installs with arch linux package called PacName on given Arch Linux
-:- multifile installs_with_pacman/3.
-
-installs_with_pacman(P, _, PacName) :- installs_with_pacman(P, PacName).
-
-%depends(P, linux(arch), ['pacman']) :-
-%    installs_with_pacman(P, _, _).
-
 :- dynamic pacman_updated/0.
 
 pkg('pacman-update').
-met('pacman-update', linux(arch(_))) :- pacman_updated.
-meet('pacman-update', linux(arch(_)) :-
+met('pacman-update', linux(arch)) :- pacman_updated.
+meet('pacman-update', linux(arch)) :-
     bash('sudo pacman -Syu'),
     assertz(apt_updated).
 
-met(P, linux(Codename)) :-
-    installs_with_apt(P, Codename, PkgName). %!,
-    %( is_list(PkgName) ->
-    %    maplist(check_dpkg, PkgName)
-    %;
-    %    check_dpkg(PkgName)
-    %).
+% attempt to install a package with pacman
+install_packman(Pkg) :-
+    bash(['sudo pacman -S --noconfirm ', Pkg]).
 
-meet(P, linux(Codename)) :-
-    installs_with_apt(P, Codename, PkgName).% !,
-%( is_list(PkgName) ->
-%        maplist(install_apt, PkgName)
-%    ;
-%        install_apt(PkgName)
-%    ).
+% succeed only if the package is already installed
+check_packman(Pkg) :-
+    bash(['pacman -Qs ', Pkg]).
 
-%check_dpkg(PkgName) :-
-%    join(['dpkg -s ', PkgName, ' >/dev/null 2>/dev/null'], Cmd),
-%    bash(Cmd).
+met(P, linux(arch)) :-
+    installs_with_pacman(P, PkgName), !,
+    check_packman(PkgName).
+
+meet(P, linux(arch)) :-
+    installs_with_packman(P, PkgName), !,
+    install_packman(PkgName).
