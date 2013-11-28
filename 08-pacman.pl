@@ -20,7 +20,10 @@ pkg('pacman-update').
 met('pacman-update', linux(arch)) :- pacman_updated.
 meet('pacman-update', linux(arch)) :-
     bash('sudo pacman -Syu'),
-    assertz(apt_updated).
+    assertz(pacman_updated).
+
+depends(P, linux(arch), ['pacman-update']) :-
+    installs_with_pacman(P, _).
 
 % attempt to install a package with pacman
 install_pacman(Pkg) :-
