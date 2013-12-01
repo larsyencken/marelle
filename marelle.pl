@@ -385,4 +385,5 @@ meet(selfupdate, _) :-
 :- include('05-git').
 :- include('06-meta').
 :- include('07-managed').
+:- include('08-pacman').
 :- include('sudo').
