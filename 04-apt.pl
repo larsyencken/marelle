@@ -22,13 +22,17 @@ installs_with_apt(P, P) :- installs_with_apt(P).
 installs_with_apt(P, _, AptName) :- installs_with_apt(P, AptName).
 
 depends(P, linux(_), ['apt-get-update']) :-
+    isfile('/usr/bin/apt-get'),
     installs_with_apt(P, _, _).
 
 :- dynamic apt_updated/0.
 
 pkg('apt-get-update').
-met('apt-get-update', linux(_)) :- apt_updated.
+met('apt-get-update', linux(_)) :-
+    isfile('/usr/bin/apt-get'),
+    apt_updated.
 meet('apt-get-update', linux(_)) :-
+    isfile('/usr/bin/apt-get'),
     bash('sudo apt-get update'),
     assertz(apt_updated).
 
