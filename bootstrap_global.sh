@@ -49,6 +49,13 @@ function install_git() {
         bail "Unknown linux variant"
       fi
       ;;
+    FreeBSD)
+      if has_exec pkg; then
+        sudo pkg install -y git
+      else
+        bail "Old FreeBSD version without pkgng"
+      fi
+      ;;
     *)
       bail "Unknown operating system $(uname -s)"
       ;;
@@ -76,6 +83,13 @@ function install_prolog() {
         bail "Unknown linux variant"
       fi
       ;;
+    FreeBSD)
+      if has_exec pkg; then
+        sudo pkg install -y swi-pl
+      else
+        bail "Old FreeBSD version without pkgng"
+      fi
+      ;;
     *)
       bail "Unknown operating system $(uname -s)"
       ;;
@@ -99,7 +113,7 @@ function checkout_marelle() {
   cd "$(dirname ${DEST_DIR})"
   sudo git clone https://github.com/larsyencken/marelle
   sudo bash -c "cat > ${DEST_BIN}" <<EOF
-#!/bin/bash
+#!/usr/bin/env bash
 exec swipl -q -t main -s "${DEST_DIR}/marelle.pl" "\$@"
 EOF
   sudo chmod a+x "${DEST_BIN}"

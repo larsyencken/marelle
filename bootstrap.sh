@@ -46,6 +46,13 @@ function install_git() {
         bail "Unknown linux variant"
       fi
       ;;
+    FreeBSD)
+      if has_exec pkg; then
+        sudo pkg install -y git
+      else
+        bail "Old FreeBSD version without pkgng"
+      fi
+      ;;
     *)
       bail "Unknown operating system $(uname -s)"
       ;;
@@ -73,6 +80,13 @@ function install_prolog() {
         bail "Unknown linux variant"
       fi
       ;;
+    FreeBSD)
+      if has_exec pkg; then
+        sudo pkg install -y swi-pl
+      else
+        bail "Old FreeBSD version without pkgng"
+      fi
+      ;;
     *)
       bail "Unknown operating system $(uname -s)"
       ;;
@@ -95,7 +109,7 @@ function checkout_marelle() {
   mkdir -p ~/.local/bin
   git clone https://github.com/larsyencken/marelle ~/.local/marelle
   cat >~/.local/bin/marelle <<EOF
-#!/bin/bash
+#!/usr/bin/env bash
 exec swipl -q -t main -s ~/.local/marelle/marelle.pl "\$@"
 EOF
   chmod a+x ~/.local/bin/marelle
@@ -114,7 +128,7 @@ function put_marelle_in_path() {
     source ~/.profile
   fi
   if missing_exec marelle; then
-    bail "Couldn't set up marelle in PATH"
+    bail "Couldn't set up marelle in PATH. Add ~/.local/bin to your PATH in your shell's rc."
   fi
 }
 
