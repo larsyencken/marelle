@@ -269,6 +269,12 @@ detect_platform :-
         Platform = linux(Name)
     ; OS = 'Darwin' ->
         Platform = osx
+    ; OS = 'FreeBSD' ->
+        Platform = freebsd
+    ; OS = 'OpenBSD' ->
+        Platform = openbsd
+    ; OS = 'NetBSD' ->
+        Platform = netbsd
     ;
         Platform = unknown
     ),
@@ -307,16 +313,22 @@ writepkg(pkg(P, met)) :- writeln_star(P).
 writepkg(pkg(P, unmet)) :- writeln(P).
 
 install_apt(Name) :-
-    ( bash_output('whoami', root) ->
-        Sudo = ''
-    ;
-        Sudo = 'sudo '
-    ),
+    sudo_or_empty(Sudo),
     join([Sudo, 'apt-get install -y ', Name], Cmd),
     bash(Cmd).
 
 install_brew(Name) :-
     join(['brew install ', Name], Cmd),
+    bash(Cmd).
+
+install_pkgng(Name) :-
+    sudo_or_empty(Sudo),
+    join([Sudo, 'pkg install -y ', Name], Cmd),
+    bash(Cmd).
+
+install_ports(Name, Options) :-
+    sudo_or_empty(Sudo),
+    join([Sudo, 'make BATCH=yes ', Options, ' -C/usr/ports/', Name, ' install clean'], Cmd),
     bash(Cmd).
 
 home_dir(D0, D) :-
@@ -386,4 +398,5 @@ meet(selfupdate, _) :-
 :- include('06-meta').
 :- include('07-managed').
 :- include('08-pacman').
+:- include('09-freebsd').
 :- include('sudo').
