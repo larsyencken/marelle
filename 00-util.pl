@@ -22,12 +22,10 @@ isdir(Path0) :-
     exists_directory(Path).
 
 make_executable(Path) :-
-    join(['chmod a+x ', Path], Cmd),
-    sh(Cmd).
+    sh(['chmod a+x ', Path]).
 
 curl(Source, Dest) :-
-    join(['curl -s -o ', Dest, ' ', Source], Cmd),
-    sh(Cmd).
+    sh(['curl -s -o ', Dest, ' ', Source]).
 
 % sformat(+S0, +Vars, -S) is semidet.
 %   String interpolation, where {} is replaced by an argument in the list.

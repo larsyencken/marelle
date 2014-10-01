@@ -248,8 +248,7 @@ usage :-
 %   See if a command is available in the current PATH, and return the path to
 %   that command.
 which(Command, Path) :-
-    join(['which ', Command], C),
-    sh_output(C, Path).
+    sh_output(['which ', Command], Path).
 
 % which(+Command) is semidet.
 %   See if a command is available in the current PATH.
@@ -331,16 +330,19 @@ writeln_stderr(S) :-
     write(Stream, '\n'),
     close(Stream).
 
+join_if_list(Input, Output) :-
+    ( is_list(Input) ->
+        join(Input, Output)
+    ;
+        Output = Input
+    ).
+
 % sh(+Cmd, -Code) is semidet.
 %   Execute the given command in shell. Catch signals in the subshell and
 %   cause it to fail if CTRL-C is given, rather than becoming interactive.
 %   Code is the exit code of the command.
 sh(Cmd0, Code) :-
-    ( is_list(Cmd0) ->
-        join(Cmd0, Cmd)
-    ;
-        Cmd = Cmd0
-    ),
+    join_if_list(Cmd0, Cmd),
     catch(shell(Cmd, Code), _, fail).
 
 bash(Cmd0, Code) :- sh(Cmd0, Code).
@@ -354,8 +356,9 @@ bash(Cmd0) :- sh(Cmd0).
 % sh_output(+Cmd, -Output) is semidet.
 %   Run the command in shell and capture its stdout, trimming the last
 %   newline. Fails if the command doesn't return status code 0.
-sh_output(Cmd, Output) :-
+sh_output(Cmd0, Output) :-
     tmp_file(syscmd, TmpFile),
+    join_if_list(Cmd0, Cmd),
     join([Cmd, ' >', TmpFile], Call),
     sh(Call),
     read_file_to_codes(TmpFile, Codes, []),
