@@ -316,9 +316,6 @@ home_dir(D0, D) :-
     getenv('HOME', Home),
     join([Home, '/', D0], D).
 
-git_clone(Source, Dest) :-
-    sh(['git clone --recursive ', Source, ' ', Dest]).
-
 %  command packages: met when their command is in path
 :- multifile command_pkg/1.
 :- multifile command_pkg/2.
