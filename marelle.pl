@@ -312,32 +312,12 @@ write_indent(D) :-
 writepkg(pkg(P, met)) :- writeln_star(P).
 writepkg(pkg(P, unmet)) :- writeln(P).
 
-install_apt(Name) :-
-    sudo_or_empty(Sudo),
-    join([Sudo, 'apt-get install -y ', Name], Cmd),
-    sh(Cmd).
-
-install_brew(Name) :-
-    join(['brew install ', Name], Cmd),
-    sh(Cmd).
-
-install_pkgng(Name) :-
-    sudo_or_empty(Sudo),
-    join([Sudo, 'pkg install -y ', Name], Cmd),
-    sh(Cmd).
-
-install_ports(Name, Options) :-
-    sudo_or_empty(Sudo),
-    join([Sudo, 'make BATCH=yes ', Options, ' -C/usr/ports/', Name, ' install clean'], Cmd),
-    sh(Cmd).
-
 home_dir(D0, D) :-
     getenv('HOME', Home),
     join([Home, '/', D0], D).
 
 git_clone(Source, Dest) :-
-    join(['git clone --recursive ', Source, ' ', Dest], Cmd),
-    sh(Cmd).
+    sh(['git clone --recursive ', Source, ' ', Dest]).
 
 %  command packages: met when their command is in path
 :- multifile command_pkg/1.

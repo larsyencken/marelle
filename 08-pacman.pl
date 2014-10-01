@@ -27,7 +27,8 @@ depends(P, linux(arch), ['pacman-update']) :-
 
 % attempt to install a package with pacman
 install_pacman(Pkg) :-
-    sh(['sudo pacman -S --noconfirm ', Pkg]).
+    sudo_or_empty(Sudo),
+    sh([Sudo, 'pacman -S --noconfirm ', Pkg]).
 
 % succeed only if the package is already installed
 check_pacman(Pkg) :-

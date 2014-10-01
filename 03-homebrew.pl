@@ -40,6 +40,9 @@ meet(P, osx) :-
     installs_with_brew(P, PkgName), !,
     install_brew(PkgName).
 
+install_brew(Name) :-
+    sh(['brew install ', Name]).
+
 % brew_tap(TapName).
 %   An extra set of Homebrew packages.
 :- multifile brew_tap/2.

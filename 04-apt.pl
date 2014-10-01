@@ -57,3 +57,7 @@ meet(P, linux(Codename)) :-
 check_dpkg(PkgName) :-
     join(['dpkg -s ', PkgName, ' >/dev/null 2>/dev/null'], Cmd),
     sh(Cmd).
+
+install_apt(Name) :-
+    sudo_or_empty(Sudo),
+    sh([Sudo, 'apt-get install -y ', Name]).
