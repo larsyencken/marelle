@@ -9,7 +9,7 @@
 command_pkg(brew).
 
 meet(brew, osx) :-
-    bash('ruby -e "$(curl -fsSL https://raw.github.com/mxcl/homebrew/go)"').
+    sh('ruby -e "$(curl -fsSL https://raw.github.com/mxcl/homebrew/go)"').
 
 % installs_with_brew(Pkg).
 %  Pkg installs with homebrew package of same name.
@@ -28,7 +28,7 @@ depends(P, osx, [brew, 'brew-update']) :- installs_with_brew(P, _).
 pkg('brew-update').
 met('brew-update', osx) :- brew_updated.
 meet('brew-update', osx) :-
-    bash('brew update'),
+    sh('brew update'),
     assertz(brew_updated).
 
 met(P, osx) :-
@@ -55,4 +55,4 @@ met(P, osx) :-
 
 meet(P, osx) :-
     brew_tap(P, TapName), !,
-    bash(['brew tap ', TapName]).
+    sh(['brew tap ', TapName]).

@@ -11,7 +11,7 @@
 %
 %  pkg(python).
 %  met(python, _) :- which(python, _).
-%  meet(python, osx) :- bash('brew install python').
+%  meet(python, osx) :- sh('brew install python').
 %
 :- multifile pkg/1.
 :- multifile meet/2.
@@ -249,7 +249,7 @@ usage :-
 %   that command.
 which(Command, Path) :-
     join(['which ', Command], C),
-    bash_output(C, Path).
+    sh_output(C, Path).
 
 % which(+Command) is semidet.
 %   See if a command is available in the current PATH.
@@ -263,7 +263,7 @@ platform(_) :- fail.
 % detect_platform is det.
 %   Sets platform/1 with the current platform.
 detect_platform :-
-    bash_output('uname -s', OS),
+    sh_output('uname -s', OS),
     ( OS = 'Linux' ->
         linux_name(Name),
         Platform = linux(Name)
@@ -288,11 +288,11 @@ join(L, R) :- atomic_list_concat(L, R).
 %   If there can be no codename found, determine the short distro name (e.g. arch)%   Otherwise codename is unknown
 linux_name(Name) :-
     which('lsb_release', _),
-    bash_output('lsb_release -c | sed \'s/^[^:]*:\\s//g\'', Name),
+    sh_output('lsb_release -c | sed \'s/^[^:]*:\\s//g\'', Name),
     dif(Name,'n/a').
 linux_name(Name) :-
     which('lsb_release', _),
-    bash_output('lsb_release -i | sed \'s/[A-Za-z ]*:\t//\'', CapitalName),
+    sh_output('lsb_release -i | sed \'s/[A-Za-z ]*:\t//\'', CapitalName),
     dif(CapitalName,'n/a'),
     downcase_atom(CapitalName, Name).
 linux_name(unknown).
@@ -315,21 +315,21 @@ writepkg(pkg(P, unmet)) :- writeln(P).
 install_apt(Name) :-
     sudo_or_empty(Sudo),
     join([Sudo, 'apt-get install -y ', Name], Cmd),
-    bash(Cmd).
+    sh(Cmd).
 
 install_brew(Name) :-
     join(['brew install ', Name], Cmd),
-    bash(Cmd).
+    sh(Cmd).
 
 install_pkgng(Name) :-
     sudo_or_empty(Sudo),
     join([Sudo, 'pkg install -y ', Name], Cmd),
-    bash(Cmd).
+    sh(Cmd).
 
 install_ports(Name, Options) :-
     sudo_or_empty(Sudo),
     join([Sudo, 'make BATCH=yes ', Options, ' -C/usr/ports/', Name, ' install clean'], Cmd),
-    bash(Cmd).
+    sh(Cmd).
 
 home_dir(D0, D) :-
     getenv('HOME', Home),
@@ -337,7 +337,7 @@ home_dir(D0, D) :-
 
 git_clone(Source, Dest) :-
     join(['git clone --recursive ', Source, ' ', Dest], Cmd),
-    bash(Cmd).
+    sh(Cmd).
 
 %  command packages: met when their command is in path
 :- multifile command_pkg/1.
@@ -354,11 +354,11 @@ writeln_stderr(S) :-
     write(Stream, '\n'),
     close(Stream).
 
-% bash(+Cmd, -Code) is semidet.
+% sh(+Cmd, -Code) is semidet.
 %   Execute the given command in shell. Catch signals in the subshell and
 %   cause it to fail if CTRL-C is given, rather than becoming interactive.
 %   Code is the exit code of the command.
-bash(Cmd0, Code) :-
+sh(Cmd0, Code) :-
     ( is_list(Cmd0) ->
         join(Cmd0, Cmd)
     ;
@@ -366,27 +366,33 @@ bash(Cmd0, Code) :-
     ),
     catch(shell(Cmd, Code), _, fail).
 
-% bash(+Cmd) is semidet.
-%   Run the command in shell and fail unless it returns with exit code 0.
-bash(Cmd) :- bash(Cmd, 0).
+bash(Cmd0, Code) :- sh(Cmd0, Code).
 
-% bash_output(+Cmd, -Output) is semidet.
+% sh(+Cmd) is semidet.
+%   Run the command in shell and fail unless it returns with exit code 0.
+sh(Cmd) :- sh(Cmd, 0).
+
+bash(Cmd0) :- sh(Cmd0).
+
+% sh_output(+Cmd, -Output) is semidet.
 %   Run the command in shell and capture its stdout, trimming the last
 %   newline. Fails if the command doesn't return status code 0.
-bash_output(Cmd, Output) :-
+sh_output(Cmd, Output) :-
     tmp_file(syscmd, TmpFile),
     join([Cmd, ' >', TmpFile], Call),
-    bash(Call),
+    sh(Call),
     read_file_to_codes(TmpFile, Codes, []),
     atom_codes(Raw, Codes),
     atom_concat(Output, '\n', Raw).
+
+bash_output(Cmd, Output) :- sh_output(Cmd, Output).
 
 :- dynamic marelle_has_been_updated/0.
 
 pkg(selfupdate).
 met(selfupdate, _) :- marelle_has_been_updated.
 meet(selfupdate, _) :-
-    bash('cd ~/.local/marelle && git pull'),
+    sh('cd ~/.local/marelle && git pull'),
     assertz(marelle_has_been_updated).
 
 :- include('00-util').

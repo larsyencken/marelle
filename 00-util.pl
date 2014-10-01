@@ -23,11 +23,11 @@ isdir(Path0) :-
 
 make_executable(Path) :-
     join(['chmod a+x ', Path], Cmd),
-    bash(Cmd).
+    sh(Cmd).
 
 curl(Source, Dest) :-
     join(['curl -s -o ', Dest, ' ', Source], Cmd),
-    bash(Cmd).
+    sh(Cmd).
 
 % sformat(+S0, +Vars, -S) is semidet.
 %   String interpolation, where {} is replaced by an argument in the list.

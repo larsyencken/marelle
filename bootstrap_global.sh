@@ -27,33 +27,6 @@ function brew_update() {
   fi
 }
 
-function install_bash() {
-  echo 'Trying to install bash'
-  case $(uname -s) in
-    Linux)
-      if has_exec apt-get; then
-        apt_update
-        sudo apt-get install -y bash
-      elif has_exec yum; then
-        # XXX yum update?
-        sudo yum install bash
-      else
-        bail "Unknown linux variant"
-      fi
-      ;;
-    FreeBSD)
-      if has_exec pkg; then
-        sudo pkg install -y bash
-      else
-        bail "Old FreeBSD version without pkgng"
-      fi
-      ;;
-    *)
-      bail "Unknown operating system $(uname -s)"
-      ;;
-  esac
-}
-
 function install_git() {
   echo 'Trying to install git'
   case $(uname -s) in
@@ -139,8 +112,8 @@ function checkout_marelle() {
   sudo mkdir -p "${DEST_DIR}"
   cd "$(dirname ${DEST_DIR})"
   sudo git clone https://github.com/larsyencken/marelle
-  sudo bash -c "cat > ${DEST_BIN}" <<EOF
-#!/usr/bin/env bash
+  sudo sh -c "cat > ${DEST_BIN}" <<EOF
+#!/bin/sh
 exec swipl -q -t main -s "${DEST_DIR}/marelle.pl" "\$@"
 EOF
   sudo chmod a+x "${DEST_BIN}"
@@ -151,10 +124,6 @@ EOF
 
 function main() {
   echo 'BOOTSTRAPPING MARELLE'
-  if missing_exec bash; then
-    install_bash
-  fi
-  echo 'Bash: OK'
 
   if missing_exec git; then
     install_git

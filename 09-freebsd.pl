@@ -22,7 +22,7 @@
 installs_with_pkgng(P, P) :- installs_with_pkgng(P).
 installs_with_ports(P, N, '') :- installs_with_ports(P, N).
 
-exists_pkgng(Name) :- bash(['pkg info ', Name, ' >/dev/null 2>/dev/null']).
+exists_pkgng(Name) :- sh(['pkg info ', Name, ' >/dev/null 2>/dev/null']).
 
 met(P, freebsd) :-
     ( installs_with_pkgng(P, PkgName) ->

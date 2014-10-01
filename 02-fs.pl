@@ -14,4 +14,4 @@ met(P, _) :-
 meet(P, _) :-
     symlink_step(P, Dest, Link), !,
     join(['ln -s ', Dest, ' ', Link], Cmd),
-    bash(Cmd).
+    sh(Cmd).
