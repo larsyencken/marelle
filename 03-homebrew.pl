@@ -43,7 +43,7 @@ meet(P, osx) :-
 install_brew(Name) :-
     sh(['brew install ', Name]).
 
-% brew_tap(TapName).
+% brew_tap(P, TapName).
 %   An extra set of Homebrew packages.
 :- multifile brew_tap/2.
 
@@ -52,10 +52,50 @@ pkg(P) :- brew_tap(P, _).
 
 met(P, osx) :-
     brew_tap(P, TapName), !,
-    atomic_list_concat([Prefix, Suffix], '/', TapName),
-    join(['/usr/local/Library/Taps/', Prefix, '-', Suffix], Path),
+    join(['/usr/local/Library/Taps/', TapName], Path),
     isdir(Path).
 
 meet(P, osx) :-
     brew_tap(P, TapName), !,
     sh(['brew tap ', TapName]).
+
+
+brew_tap('brew-cask-tap', 'caskroom/homebrew-cask').
+pkg('brew-cask').
+depends('brew-cask', osx, ['brew-cask-tap']).
+installs_with_brew('brew-cask').
+
+pkg('brew-cask-configured').
+depends('brew-cask-configured', osx, ['brew-cask']).
+met('brew-cask-configured', osx) :- isdir('/opt/homebrew-cask/Caskroom').
+meet('brew-cask-configured', osx) :- sh('brew cask').
+
+% installs_with_brew_cask(Pkg).
+%  Pkg installs with homebrew-cask package of same name.
+:- multifile installs_with_brew_cask/1.
+
+% installs_with_brew_cask(Pkg, BrewName).
+%  Pkg installs with homebrew-cask package called BrewName.
+:- multifile installs_with_brew_cask/2.
+
+:- multifile cask_pkg/1.
+
+:- multifile cask_pkg/2.
+
+cask_pkg(P, P) :- cask_pkg(P).
+pkg(P) :- cask_pkg(P, _).
+installs_with_brew_cask(P, BrewName) :- cask_pkg(P, BrewName).
+installs_with_brew_cask(P, P) :- installs_with_brew_cask(P).
+depends(P, osx, ['brew-cask-configured']) :- cask_pkg(P, _).
+
+met(P, osx) :-
+    installs_with_brew_cask(P, PkgName), !,
+    join(['/opt/homebrew-cask/Caskroom/', PkgName], Dir),
+    isdir(Dir).
+
+meet(P, osx) :-
+    installs_with_brew_cask(P, PkgName), !,
+    install_brew_cask(PkgName).
+
+install_brew_cask(Name) :-
+    sh(['brew cask install ', Name]).
