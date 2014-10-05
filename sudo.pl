@@ -27,3 +27,12 @@ sudo_or_empty(Command) :-
         which('sudo', Sudo),
         join([Sudo, ' '], Command)
     ).
+
+sudo_sh(Command0) :-
+    sudo_or_empty(Sudo),
+    join_if_list(Command0, Command),
+    tmp_file_stream(text, File, Stream),
+    write(Stream, Command),
+    close(Stream),
+    sh([Sudo, 'sh "', File, '"']),
+    delete_file(File).
