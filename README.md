@@ -1,6 +1,7 @@
 # Marelle ("hopscotch")
 
-[![Build Status](https://travis-ci.org/larsyencken/marelle.png)](https://travis-ci.org/larsyencken/marelle) [![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/larsyencken/marelle/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+[![Build Status](https://travis-ci.org/larsyencken/marelle.png)](https://travis-ci.org/larsyencken/marelle) [![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/larsyencken/marelle/trend.png)](https://bitdeli.com/free "Bitdeli Badge") [![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/larsyencken/marelle)
+
 
 Test-driven system administration in SWI-Prolog, in the style of [Babushka](https://github.com/benhoskings/babushka).
 
