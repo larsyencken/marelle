@@ -37,7 +37,7 @@ test(sformat) :-
     sformat('~a, ~a, ~a', ['Once', 'twice', 'three times'],
         'Once, twice, three times'),
     \+ catch(
-        sformat('~a and ~a', [romeo], X),
+        sformat('~a and ~a', [romeo], _),
         'wrong number of arguments in interpolation',
         fail
     ).
