@@ -1,2 +1,2 @@
 test:
-	exec swipl -t run_tests -s test_marelle.pl
+	exec swipl -q -t run_tests -s test_marelle.pl
