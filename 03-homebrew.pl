@@ -19,7 +19,12 @@ meet(brew, osx) :-
 %  Pkg installs with homebrew package called BrewName.
 :- multifile installs_with_brew/2.
 
+% installs_with_brew(Pkg, BrewName, Options).
+%  Pkg installs with homebrew package called BrewName and with Options.
+:- multifile installs_with_brew/3.
+
 installs_with_brew(P, P) :- installs_with_brew(P).
+installs_with_brew(P, N, '') :- installs_with_brew(P, N).
 
 depends(P, osx, [brew, 'brew-update']) :- installs_with_brew(P, _).
 
@@ -32,16 +37,16 @@ meet('brew-update', osx) :-
     assertz(brew_updated).
 
 met(P, osx) :-
-    installs_with_brew(P, PkgName), !,
+    installs_with_brew(P, PkgName, _), !,
     join(['/usr/local/Cellar/', PkgName], Dir),
     isdir(Dir).
 
 meet(P, osx) :-
-    installs_with_brew(P, PkgName), !,
-    install_brew(PkgName).
+    installs_with_brew(P, PkgName, Options), !,
+    install_brew(PkgName, Options).
 
-install_brew(Name) :-
-    sh(['brew install ', Name]).
+install_brew(Name, Options) :-
+    sh(['brew install ', Name, ' ', Options]).
 
 % brew_tap(P, TapName).
 %   An extra set of Homebrew packages.
@@ -78,6 +83,10 @@ meet('brew-cask-configured', osx) :- sh('brew cask').
 %  Pkg installs with homebrew-cask package called BrewName.
 :- multifile installs_with_brew_cask/2.
 
+% installs_with_brew_cask(Pkg, BrewName, Options).
+%  Pkg installs with homebrew-cask package called BrewName and with Options.
+:- multifile installs_with_brew_cask/3.
+
 :- multifile cask_pkg/1.
 
 :- multifile cask_pkg/2.
@@ -86,16 +95,17 @@ cask_pkg(P, P) :- cask_pkg(P).
 pkg(P) :- cask_pkg(P, _).
 installs_with_brew_cask(P, BrewName) :- cask_pkg(P, BrewName).
 installs_with_brew_cask(P, P) :- installs_with_brew_cask(P).
+installs_with_brew_cask(P, N, '') :- installs_with_brew_cask(P, N).
 depends(P, osx, ['brew-cask-configured']) :- cask_pkg(P, _).
 
 met(P, osx) :-
-    installs_with_brew_cask(P, PkgName), !,
+    installs_with_brew_cask(P, PkgName, _), !,
     join(['/opt/homebrew-cask/Caskroom/', PkgName], Dir),
     isdir(Dir).
 
 meet(P, osx) :-
-    installs_with_brew_cask(P, PkgName), !,
-    install_brew_cask(PkgName).
+    installs_with_brew_cask(P, PkgName, Options), !,
+    install_brew_cask(PkgName, Options).
 
-install_brew_cask(Name) :-
-    sh(['brew cask install ', Name]).
+install_brew_cask(Name, Options) :-
+    sh(['brew cask install ', Name, ' ', Options]).
