@@ -42,6 +42,15 @@ test(sformat) :-
         fail
     ).
 
+test(symlink) :-
+    Dest = '/tmp/03435f97a0b2cef0780c9f2327e7e668',
+    Link = '/tmp/03435f97a0b2cef0780c9f2327e7e668-link',
+    sh(['touch ', Dest]),
+    sh(['rm -f ', Link]),
+    \+ is_symlinked(Dest, Link),
+    symlink(Dest, Link),
+    is_symlinked(Dest, Link).
+
 test(join) :-
     join([], ''),
     join([''], ''),
