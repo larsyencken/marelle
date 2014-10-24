@@ -20,6 +20,8 @@
 
 :- dynamic platform/1.
 
+marelle_version('0.1.0').
+
 % pkg(?Pkg) is nondet.
 %   Is this a defined package name?
 
@@ -110,6 +112,9 @@ main(profile, [Cmd|Rest]) :- !, profile(main(Cmd, Rest)).
 
 % time the command and count inferences
 main(time, [Cmd|Rest]) :- !, time(main(Cmd, Rest)).
+
+main(version, []) :-
+    marelle_version(V), writeln(V).
 
 main(_, _) :- !, usage.
 
@@ -240,6 +245,7 @@ usage :-
     writeln('       marelle met [-q] <target>'),
     writeln('       marelle meet <target>'),
     writeln('       marelle platform'),
+    writeln('       marelle version'),
     writeln(''),
     writeln('Detect and meet dependencies. Searches ~/.marelle/deps and the folder'),
     writeln('marelle-deps in the current directory if it exists.').
