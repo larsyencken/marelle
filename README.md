@@ -35,8 +35,8 @@ Pick a bootstrap script from the options below. If you're not sure, choose the s
 
 Version | Bootstrap command
 ------- | -----------------
-_0.1.0 (stable)_ | `bash -c $(curl -fsSL https://raw.githubusercontent.com/larsyencken/marelle/versions/0.1.0/bootstrap.sh)`
-_master (dev)_ | `bash -c $(curl -fsSL https://raw.githubusercontent.com/larsyencken/marelle/master/bootstrap.sh)`
+_0.1.0 (stable)_ | `bash -c "$(curl -fsSL https://raw.githubusercontent.com/larsyencken/marelle/versions/0.1.0/bootstrap.sh")`
+_master (dev)_ | `bash -c "$(curl -fsSL https://raw.githubusercontent.com/larsyencken/marelle/master/bootstrap.sh")`
 
 This will install marelle for all users, putting the executable in `/usr/local/bin/marelle`.
 
