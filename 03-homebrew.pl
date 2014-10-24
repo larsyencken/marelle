@@ -96,7 +96,7 @@ pkg(P) :- cask_pkg(P, _).
 installs_with_brew_cask(P, BrewName) :- cask_pkg(P, BrewName).
 installs_with_brew_cask(P, P) :- installs_with_brew_cask(P).
 installs_with_brew_cask(P, N, '') :- installs_with_brew_cask(P, N).
-depends(P, osx, ['brew-cask-configured']) :- cask_pkg(P, _).
+depends(P, osx, ['brew-cask-configured', 'brew-update']) :- cask_pkg(P, _).
 
 met(P, osx) :-
     installs_with_brew_cask(P, PkgName, _), !,
