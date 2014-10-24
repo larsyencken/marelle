@@ -116,7 +116,7 @@ function checkout_marelle() {
   echo 'Trying to check out marelle'
   sudo mkdir -p "${DEST_DIR}"
   cd "$(dirname ${DEST_DIR})"
-  sudo git clone https://github.com/larsyencken/marelle
+  sudo git clone -b versions/0.1.0 https://github.com/larsyencken/marelle
   sudo sh -c "cat > ${DEST_BIN}" <<EOF
 #!/bin/sh
 exec swipl -q -t main -s "${DEST_DIR}/marelle.pl" "\$@"
