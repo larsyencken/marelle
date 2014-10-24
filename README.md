@@ -31,13 +31,12 @@ It also has some interesting differences:
 
 ### Quickstart
 
-Run the bootstrap script:
+Pick a bootstrap script from the options below. If you're not sure, choose the stable version.
 
-```bash
-bash -c "`curl -fsSL https://raw.githubusercontent.com/larsyencken/marelle/master/bootstrap.sh`"
-```
+| _0.1.0 (stable)_ | `bash -c $(curl -fsSL https://raw.githubusercontent.com/larsyencken/marelle/versions/0.1.0/bootstrap.sh)` |
+| _master (dev)_ | `bash -c $(curl -fsSL https://raw.githubusercontent.com/larsyencken/marelle/master/bootstrap.sh)` |
 
-This will install marelle as the current user, putting the executable in `~/.local/bin/marelle`.
+This will install marelle for all users, putting the executable in `/usr/local/bin/marelle`.
 
 ### Manual version
 
