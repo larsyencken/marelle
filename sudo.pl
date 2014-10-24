@@ -12,7 +12,7 @@ sudo_tell(Filename) :-
     which('sudo', Sudo),
     process_create(
         Sudo,
-        ['bash', '-c', BashCmd],
+        ['/bin/sh', '-c', BashCmd],
         [stdin(pipe(Stream))]
     ),
     tell(Stream).
@@ -21,9 +21,18 @@ sudo_tell(Filename) :-
 %   Returns an empty string when ran as root, path to sudo with
 %   a trailing space otherwise.
 sudo_or_empty(Command) :-
-    ( bash_output('whoami', root) ->
+    ( sh_output('whoami', root) ->
         Command = ''
     ;
         which('sudo', Sudo),
         join([Sudo, ' '], Command)
     ).
+
+sudo_sh(Command0) :-
+    sudo_or_empty(Sudo),
+    join_if_list(Command0, Command),
+    tmp_file_stream(text, File, Stream),
+    write(Stream, Command),
+    close(Stream),
+    sh([Sudo, 'sh "', File, '"']),
+    delete_file(File).

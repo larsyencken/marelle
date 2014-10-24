@@ -33,7 +33,7 @@ met('apt-get-update', linux(_)) :-
     apt_updated.
 meet('apt-get-update', linux(_)) :-
     isfile('/usr/bin/apt-get'),
-    bash('sudo apt-get update'),
+    sh('sudo apt-get update'),
     assertz(apt_updated).
 
 met(P, linux(Codename)) :-
@@ -56,4 +56,8 @@ meet(P, linux(Codename)) :-
 
 check_dpkg(PkgName) :-
     join(['dpkg -s ', PkgName, ' >/dev/null 2>/dev/null'], Cmd),
-    bash(Cmd).
+    sh(Cmd).
+
+install_apt(Name) :-
+    sudo_or_empty(Sudo),
+    sh([Sudo, 'apt-get install -y ', Name]).

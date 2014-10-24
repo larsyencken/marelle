@@ -19,7 +19,7 @@ installs_with_pacman(P, P) :- installs_with_pacman(P).
 pkg('pacman-update').
 met('pacman-update', linux(arch)) :- pacman_updated.
 meet('pacman-update', linux(arch)) :-
-    bash('sudo pacman -Syu'),
+    sh('sudo pacman -Syu'),
     assertz(pacman_updated).
 
 depends(P, linux(arch), ['pacman-update']) :-
@@ -27,11 +27,12 @@ depends(P, linux(arch), ['pacman-update']) :-
 
 % attempt to install a package with pacman
 install_pacman(Pkg) :-
-    bash(['sudo pacman -S --noconfirm ', Pkg]).
+    sudo_or_empty(Sudo),
+    sh([Sudo, 'pacman -S --noconfirm ', Pkg]).
 
 % succeed only if the package is already installed
 check_pacman(Pkg) :-
-    bash(['pacman -Qi ', Pkg, '>/dev/null 2>/dev/null']).
+    sh(['pacman -Qi ', Pkg, '>/dev/null 2>/dev/null']).
 
 met(P, linux(arch)) :-
     installs_with_pacman(P, PkgName), !,

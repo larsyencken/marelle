@@ -48,7 +48,7 @@ python_pkg(P, P) :- python_pkg(P).
 % python_import(+Pkg) is semidet.
 %   Try to import the module in Python, failing if the import fails.
 python_import(Pkg) :-
-    bash(['python -c \'import ', Pkg, '\' >/dev/null 2>/dev/null']).
+    sh(['python -c \'import ', Pkg, '\' >/dev/null 2>/dev/null']).
 
 %  All python packages depend on Python.
 depends(P, _, [python]) :-
@@ -62,7 +62,7 @@ depends(P, _, [pip]) :- pip_pkg(P, _, _).
 
 met(P, _) :-
     pip_pkg(P, PkgName, _), !,
-    bash(['pip freeze 2>/dev/null | cut -d \'=\' -f 1 | fgrep -qi ', PkgName]).
+    sh(['pip freeze 2>/dev/null | cut -d \'=\' -f 1 | fgrep -qi ', PkgName]).
 
 %  all pip packages install using pip
 installs_with_pip(P, PkgSource) :- pip_pkg(P, _, PkgSource).
@@ -85,7 +85,7 @@ install_pip(Pkg) :-
     ),
     join(['Installing ', Pkg, ' with pip'], Msg),
     writeln(Msg),
-    bash(['umask a+rx && ', Sudo, 'pip install -U ', Pkg]).
+    sh(['umask a+rx && ', Sudo, 'pip install -U ', Pkg]).
 
 pkg(python).
 installs_with_brew(python).

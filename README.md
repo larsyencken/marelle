@@ -44,9 +44,11 @@ This will install marelle as the current user, putting the executable in `~/.loc
 1. Get Prolog
     - On OS X, with Homebrew: `brew install swi-prolog`
     - On Ubuntu, with apt-get: `sudo apt-get install swi-prolog-nox`
+    - On FreeBSD, with pkgng: `sudo pkg install swi-pl`
 2. Get git
     - On OS X, with Homebrew: `brew install git`
     - On Ubuntu, with apt-get: `sudo apt-get install git`
+    - On FreeBSD, with pkgng: `sudo pkg install git`
 3. Clone and set up marelle
 
 ```bash
@@ -57,10 +59,15 @@ git clone https://github.com/larsyencken/marelle ~/.local/marelle
 # set up an executable in ~/.local/bin
 mkdir -p ~/.local/bin
 cat >~/.local/bin/marelle <<EOF
-#!/bin/bash
+#!/bin/sh
 exec swipl -q -t main -s ~/.local/marelle/marelle.pl "$@"
 EOF
 chmod a+x ~/.local/bin/marelle
+
+# add ~/.local/bin to your PATH
+# (the exact commands depend on the shell you use)
+echo 'export PATH=~/.local/bin:$PATH' >>~/.profile
+source ~/.profile
 ```
 
 ## Writing deps
@@ -79,7 +86,7 @@ met(python, linux(_)) :- exists_file('/usr/bin/python').
 % we can install by running apt-get in shell
 meet(python, linux(_)) :-
     % could also use: install_apt('python-dev')
-    bash('sudo apt-get install -y python-dev').
+    sh('sudo apt-get install -y python-dev').
 ```
 
 To install python on a machine, I'd now run `marelle meet python`.

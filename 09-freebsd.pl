@@ -22,7 +22,7 @@
 installs_with_pkgng(P, P) :- installs_with_pkgng(P).
 installs_with_ports(P, N, '') :- installs_with_ports(P, N).
 
-exists_pkgng(Name) :- bash(['pkg info ', Name, ' >/dev/null 2>/dev/null']).
+exists_pkgng(Name) :- sh(['pkg info ', Name, ' >/dev/null 2>/dev/null']).
 
 met(P, freebsd) :-
     ( installs_with_pkgng(P, PkgName) ->
@@ -37,3 +37,11 @@ meet(P, freebsd) :-
     ; installs_with_ports(P, PortName, Options) ->
         install_ports(PortName, Options)
     ).
+
+install_pkgng(Name) :-
+    sudo_or_empty(Sudo),
+    sh([Sudo, 'pkg install -y ', Name]).
+
+install_ports(Name, Options) :-
+    sudo_or_empty(Sudo),
+    sh([Sudo, 'make BATCH=yes ', Options, ' -C/usr/ports/', Name, ' install clean']).
