@@ -367,14 +367,6 @@ sh_output(Cmd0, Output) :-
 
 bash_output(Cmd, Output) :- sh_output(Cmd, Output).
 
-:- dynamic marelle_has_been_updated/0.
-
-pkg(selfupdate).
-met(selfupdate, _) :- marelle_has_been_updated.
-meet(selfupdate, _) :-
-    sh('cd ~/.local/marelle && git pull'),
-    assertz(marelle_has_been_updated).
-
 :- include('00-util').
 :- include('01-python').
 :- include('02-fs').
@@ -385,4 +377,9 @@ meet(selfupdate, _) :-
 :- include('07-managed').
 :- include('08-pacman').
 :- include('09-freebsd').
+:- include('10-idempotent').
 :- include('sudo').
+
+idempotent_pkg(selfupdate).
+execute(selfupdate, _) :-
+		sh('cd ~/.local/marelle && git pull').
