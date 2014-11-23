@@ -5,7 +5,9 @@
 
 Test-driven system administration in SWI-Prolog, in the style of [Babushka](https://github.com/benhoskings/babushka).
 
-Marelle uses [logic programming](https://en.wikipedia.org/wiki/Logic_programming) to describe system targets and rules by which these targets can be met. Prolog's built-in search mechanism makes writing and using these dependencies elegant. Anecdotally, writing deps for Marelle has the feel of teaching it about types of packages, rather than the feel of writing package templates.
+Marelle uses [logic programming](https://en.wikipedia.org/wiki/Logic_programming) to describe system targets and rules by which these targets can be met.
+Prolog's built-in search mechanism makes writing and using these dependencies elegant.
+Anecdotally, writing deps for Marelle has the feel of teaching it about types of packages, rather than the feel of writing package templates.
 
 ![Hopscotch for Seniors](https://raw.github.com/wiki/larsyencken/marelle/img/HopscotchForSeniors.jpg)
 
@@ -73,9 +75,11 @@ source ~/.profile
 
 ## Writing deps
 
-Make a `marelle-deps/` folder inside your project repo. Each package has two components, a `met/2` goal which checks if the dependency is met, and an `meet/2` goal with instructions on how to actually meet it if it's missing.
+Make a `marelle-deps/` folder inside your project repo.
+Each package has two components, a `met/2` goal which checks if the dependency is met, and an `meet/2` goal with instructions on how to actually meet it if it's missing.
 
-For example, suppose I want to write a dep for Python that works on recent Ubuntu flavours. I might write:
+For example, suppose I want to write a dep for Python that works on recent Ubuntu flavours.
+I might write:
 
 ```prolog
 % python is a target to meet
@@ -106,7 +110,37 @@ meet(pip, linux(_)) :- install_apt('python-pip').
 % on all platforms, pip depends on python
 depends(pip, _, [python]).
 ```
-Note our our use of platform specifiers and the `_` wildcard in their place. To see your current platform as described by marelle, run `marelle platform`. Examples include: `osx`, `linux(precise)` and `linux(raring)`.
+
+Note our our use of platform specifiers and the `_` wildcard in their place.
+To see your current platform as described by marelle, run `marelle platform`.
+Examples include: `osx`, `linux(precise)` and `linux(raring)`.
+
+### Meta deps
+
+Marelle supports meta deps, similar to meta packages in various package managers.
+Meta deps are empty deps that only depend on others.
+
+```prolog
+% platform-independent
+meta_pkg(fonts, [ fira, source_sans ]).
+
+% platform-specific
+meta_pkg(desktop, freebsd, [ xmonad, xmobar, dmenu ]).
+meta_pkg(desktop, osx, [ karabiner, seil, mjolnir ]).
+```
+
+### Idempotent deps
+
+If you have an [idempotent](http://en.wikipedia.org/wiki/Idempotence) command -- that is, an action you can safely run over and over again, like `sysctl` or `sysrc` -- you can make an idempotent dep.
+
+```prolog
+idempotent_pkg(network_configured).
+
+% execute is like meet, but for idempotent deps.
+% in fact, execute is executed by meet
+execute(network_configured, freebsd) :-
+    sudo_sh('sysctl net.inet.ip.portrange.reservedhigh=0').
+```
 
 ## Running deps
 
@@ -132,7 +166,8 @@ It reports the code for the platform you're currently on.
 
 ## Where to put your deps
 
-Like both Babushka and Babashka, Marelle looks for deps in `~/.marelle/deps` and in a folder called `marelle-deps` in the current directory, if either exists. This allows you to set up a personal set of deps for your environment, as well as project-specific deps.
+Like both Babushka and Babashka, Marelle looks for deps in `~/.marelle/deps` and in a folder called `marelle-deps` in the current directory, if either exists.
+This allows you to set up a personal set of deps for your environment, as well as project-specific deps.
 
 ## Examples
 
