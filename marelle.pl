@@ -20,7 +20,7 @@
 
 :- dynamic platform/1.
 
-marelle_version('0.1.0').
+marelle_version('dev').
 
 % pkg(?Pkg) is nondet.
 %   Is this a defined package name?
