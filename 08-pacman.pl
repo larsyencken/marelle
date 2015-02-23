@@ -4,12 +4,12 @@
 %
 
 % installs_with_pacman(Pkg).
-%   Pkg installs with apt package of same name on all Ubuntu/Debian flavours
+%   Pkg installs with pacman package of same name on Arch Linux
 :- multifile installs_with_pacman/1.
 
 % installs_with_pacman(Pkg, PacName).
-%   Pkg installs with apt package called AptName on all Ubuntu/Debian
-%   flavours. PacName can also be a list of packages.
+%   Pkg installs with pacman package called PacName on Arch Linux
+%   PacName can also be a list of packages.
 :- multifile installs_with_pacman/2.
 
 installs_with_pacman(P, P) :- installs_with_pacman(P).
