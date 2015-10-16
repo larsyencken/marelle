@@ -11,7 +11,7 @@ Marelle uses [logic programming](https://en.wikipedia.org/wiki/Logic_programming
 
 ## Current status
 
-Working and in active use.
+Experimental but working.
 
 ## Features
 
