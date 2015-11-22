@@ -288,18 +288,19 @@ detect_platform :-
 
 join(L, R) :- atomic_list_concat(L, R).
 
-% linux_name(-Name).
-%   Determine the codename of the linux release (e.g. precise).
-%   If there can be no codename found, determine the short distro name (e.g. arch)%   Otherwise codename is unknown
+% linux_name(-Name) is det.
+%   Determine the codename of the linux release (e.g. precise). If there can
+%   be no codename found, determine the short distro name (e.g. arch).
+%   Otherwise codename is unknown.
 linux_name(Name) :-
     which('lsb_release', _),
     sh_output('lsb_release -c | sed \'s/^[^:]*:\\s//g\'', Name),
-    dif(Name,'n/a').
+    dif(Name,'n/a'), !.
 linux_name(Name) :-
     which('lsb_release', _),
     sh_output('lsb_release -i | sed \'s/[A-Za-z ]*:\t//\'', CapitalName),
     dif(CapitalName,'n/a'),
-    downcase_atom(CapitalName, Name).
+    downcase_atom(CapitalName, Name), !.
 linux_name(unknown).
 
 
