@@ -61,7 +61,7 @@ git clone https://github.com/larsyencken/marelle ~/.local/marelle
 mkdir -p ~/.local/bin
 cat >~/.local/bin/marelle <<EOF
 #!/bin/sh
-exec swipl -q -t main -s ~/.local/marelle/marelle.pl "$@"
+exec swipl -q -t main -s ~/.local/marelle/marelle.pl "\$@"
 EOF
 chmod a+x ~/.local/bin/marelle
 
